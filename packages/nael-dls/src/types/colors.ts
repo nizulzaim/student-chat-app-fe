@@ -1,0 +1,1 @@
+export type Colors = "slate" | "gray" | "zinc" | "neutral" | "stone" | "red" | "pink" | "orange" | "amber" | "yellow" | "lime" | "green" | "emerald" | "teal" | "cyan" | "sky" | "blue" | "indigo" | "violet" | "purple" | "fuchsia" | "rose" | "primary" | "accent" | 'tertiary' | 'quaternary'

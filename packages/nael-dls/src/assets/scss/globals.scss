@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Lexend:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+@layer base {
+  ::-webkit-scrollbar-thumb {
+    @apply bg-transparent shadow-sm;
+  }
+  ::-webkit-scrollbar {
+    @apply w-2 bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded bg-slate-500 dark:bg-slate-800;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+  @apply h-full bg-slate-100;
+}
+
+body {
+  @apply h-full;
+}
+
+#__nuxt {
+  @apply h-full;
+
+  .bg-glow {
+    @apply bg-gradient-to-bl from-[#7600B7] via-[#A706A1] to-[#FD3174] border-0;
+  }
+
+  .text-glow {
+    @apply bg-gradient-to-bl from-[#7600B7] via-[#A706A1] to-[#FD3174] bg-clip-text tracking-tight text-transparent;
+  }
+}

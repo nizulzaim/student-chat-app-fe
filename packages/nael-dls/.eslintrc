@@ -1,0 +1,13 @@
+{
+  "root": true,
+  "extends": ["@nuxt/eslint-config"],
+  "overrides": [
+    {
+      // These pages are not used directly by users so they can have one-word names.
+      "files": [
+        "**/components/**/*.{js,ts,vue}"
+      ],
+      "rules": { "vue/multi-word-component-names": "off" }
+    }
+  ]
+}

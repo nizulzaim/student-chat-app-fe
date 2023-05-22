@@ -1,0 +1,54 @@
+query Users($query: FindUsersPaginationArgs!, $sort: UsersSortArgs) {
+  users(query: $query, sort: $sort) {
+    items {
+      _id
+      email
+      createdAt
+      timezone
+      pictureUrl
+      firstName
+      displayName
+      isActive
+      lastName
+      updatedAt
+    }
+    hasPreviousPage
+    page
+    total
+    hasNextPage
+  }
+}
+
+query User($args: FindUserArgs!) {
+  user(args: $args) {
+    _id
+    isActive
+    createdAt
+    updatedAt
+    firstName
+    lastName
+    email
+    timezone
+    pictureUrl
+    organizationIds
+    displayName
+  }
+}
+
+mutation CreateUser($input: CreateUserInput!) {
+  createUser(input: $input) {
+    _id
+    createdAt
+    email
+    firstName
+    isActive
+    lastName
+    organizationIds
+  }
+}
+
+mutation UpdateUser($input: UpdateUserInput!) {
+  updateUser(input: $input) {
+    _id
+  }
+}
