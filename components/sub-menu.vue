@@ -41,7 +41,7 @@ const props = defineProps<Props>()
               v-for="item in props.items"
               :key="item.name"
               :to="item.href"
-              class="-m-3 block rounded-md p-3 transition duration-150 ease-in-out hover:bg-gray-50 flex items-center"
+              class="-m-3 rounded-md p-3 transition duration-150 ease-in-out hover:bg-gray-50 flex items-center"
               @click="close"
             >
               <div>

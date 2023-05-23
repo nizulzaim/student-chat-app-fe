@@ -1,129 +1,297 @@
 
-<script setup lang="ts">
-const { onLogout, getToken } = useApollo()
-
-const route = useRoute()
-const router = useRouter()
-const { user } = useCurrentUser()
-
-const isTokenAvailable = ref(false)
-
-onMounted(async () => {
-  const token = await getToken()
-  if (!token) return router.replace('/')
-  isTokenAvailable.value = true
-})
+<script lang="ts" setup>
+import { ref } from 'vue'
+import {
+  Dialog,
+  DialogPanel,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+  TransitionChild,
+  TransitionRoot,
+} from '@headlessui/vue'
 
 const navigation = [
-  { name: 'Overview', href: '/overview', icon: 'ic:twotone-home' },
-  { name: 'Dashboard', href: '/dashboard', icon: 'ic:twotone-space-dashboard' },
-  { name: 'Administration', href: '/administration', icon: 'ic:twotone-admin-panel-settings' },
-  { name: 'Backoffice Administration', href: '/backoffice', icon: 'ic:twotone-settings' },
+  { name: 'Dashboard', href: '#', icon: 'uim:house-user', current: true },
+  { name: 'Team', href: '#', icon: "uim:user-nurse", current: false },
+  // { name: 'Projects', href: '#', icon: FolderIcon, current: false },
+  // { name: 'Calendar', href: '#', icon: CalendarIcon, current: false },
+  // { name: 'Documents', href: '#', icon: DocumentDuplicateIcon, current: false },
+  // { name: 'Reports', href: '#', icon: ChartPieIcon, current: false },
+]
+const userNavigation = [
+  { name: 'Your profile', href: '#' },
+  { name: 'Sign out', href: '#' },
 ]
 
-const logout = async () => {
-  await onLogout()
-  router.replace('/')
-}
+const router = useRouter()
+onBeforeMount(() => {
+  const isAuthenticated = useIsAuthenticated()
+  if (!isAuthenticated.value) {
+    return router.replace('/')
+  }
+})
 
+const { user } = useCurrentUser()
+const sidebarOpen = ref(false)
+
+console.log(user)
 </script>
 
 <template>
-  <!-- Component Start -->
-  <div
-    v-if="isTokenAvailable"
-    class="flex h-full"
-  >
-    <div class="flex flex-col items-center w-80 h-full text-slate-400 shadow-xl z-50">
-      <div class="w-full overflow-hidden h-full flex flex-col bg-gray-800">
-        <a
-          class="flex items-center w-full px-6 mt-3"
-          href="#"
+  <div class="h-full overflow-hidden">
+    <TransitionRoot
+      as="template"
+      :show="sidebarOpen"
+    >
+      <Dialog
+        as="div"
+        class="relative z-50 lg:hidden"
+        @close="sidebarOpen = false"
+      >
+        <TransitionChild
+          as="template"
+          enter="transition-opacity ease-linear duration-300"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="transition-opacity ease-linear duration-300"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
         >
-          <svg
-            class="w-8 h-8 fill-current"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
+          <div class="fixed inset-0 bg-gray-900/80" />
+        </TransitionChild>
+
+        <div class="fixed inset-0 flex">
+          <TransitionChild
+            as="template"
+            enter="transition ease-in-out duration-300 transform"
+            enter-from="-translate-x-full"
+            enter-to="translate-x-0"
+            leave="transition ease-in-out duration-300 transform"
+            leave-from="translate-x-0"
+            leave-to="-translate-x-full"
           >
-            <path
-              d="M11 17a1 1 0 001.447.894l4-2A1 1 0 0017 15V9.236a1 1 0 00-1.447-.894l-4 2a1 1 0 00-.553.894V17zM15.211 6.276a1 1 0 000-1.788l-4.764-2.382a1 1 0 00-.894 0L4.789 4.488a1 1 0 000 1.788l4.764 2.382a1 1 0 00.894 0l4.764-2.382zM4.447 8.342A1 1 0 003 9.236V15a1 1 0 00.553.894l4 2A1 1 0 009 17v-5.764a1 1 0 00-.553-.894l-4-2z"
-            />
-          </svg>
-          <span class="ml-2 text-sm font-bold">The App</span>
-        </a>
-        <div class="w-full px-5">
-          <div class="flex flex-col items-center w-full mt-3 border-t border-gray-700">
-            <NuxtLink
-              v-for="nav, index in navigation"
-              :key="index"
-              class="flex items-center w-full h-12 px-3 mt-2 rounded-lg hover:bg-slate-700"
-              :to="nav.href"
+            <DialogPanel class="relative mr-16 flex w-full max-w-xs flex-1">
+              <TransitionChild
+                as="template"
+                enter="ease-in-out duration-300"
+                enter-from="opacity-0"
+                enter-to="opacity-100"
+                leave="ease-in-out duration-300"
+                leave-from="opacity-100"
+                leave-to="opacity-0"
+              >
+                <div class="absolute left-full top-0 flex w-16 justify-center pt-5">
+                  <button
+                    type="button"
+                    class="-m-2.5 p-2.5"
+                    @click="sidebarOpen = false"
+                  >
+                    <span class="sr-only">Close sidebar</span>
+                    <Icon name="material-symbols:cancel-rounded" />
+                  </button>
+                </div>
+              </TransitionChild>
+
+              <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-2 ring-1 ring-white/10">
+                <div class="flex h-16 shrink-0 items-center">
+                  <img
+                    class="h-8 w-auto"
+                    src="~/assets/img/utm-logo.svg"
+                    alt="Your Company"
+                  >
+                </div>
+                <nav class="flex flex-1 flex-col">
+                  <ul
+                    role="list"
+                    class="-mx-2 flex-1 space-y-1"
+                  >
+                    <li
+                      v-for="item in navigation"
+                      :key="item.name"
+                    >
+                      <a
+                        :href="item.href"
+                        :class="[item.current ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800', 'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold']"
+                      >
+                        <Icon :name="item.icon" />
+                        {{ item.name }}
+                      </a>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </Dialog>
+    </TransitionRoot>
+
+    <!-- Static sidebar for desktop -->
+    <div
+      class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:block lg:w-20 lg:overflow-y-auto lg:bg-gray-900 lg:pb-4"
+    >
+      <div class="flex h-16 shrink-0 items-center justify-center">
+        <img
+          class="h-8 w-auto"
+          src="~/assets/img/utm-logo.svg"
+          alt="Your Company"
+        >
+      </div>
+      <nav class="mt-8">
+        <ul
+          role="list"
+          class="flex flex-col items-center space-y-1"
+        >
+          <li
+            v-for="item in navigation"
+            :key="item.name"
+          >
+            <a
+              :href="item.href"
+              :class="[item.current ? 'bg-gray-800 text-white' : 'text-gray-200 hover:text-white hover:bg-gray-800', 'group flex gap-x-3 rounded-md p-3 text-sm leading-6 font-semibold']"
             >
               <Icon
-                :name="nav.icon"
-                class="h-6 w-6 mr-2"
+                :name="item.icon"
+                class="h-6 w-6 shrink-0"
+                aria-hidden="true"
               />
-              <span class="ml-2 text-sm font-medium">{{ nav.name }}</span>
-            </NuxtLink>
-          </div>
-        </div>
-        <a
-          class="flex items-center w-full py-3 mt-auto px-3"
-          href="#"
-        >
-          <div class="flex items-center justify-between hover:bg-gray-700 w-full h-20 px-2 rounded-lg">
-            <div class="flex items-center">
-              <NlAvatar
-                :src="user?.pictureUrl"
-                circle
-                size="lg"
-              />
-              <div>
-                <div class="ml-4 text-sm font-medium text-white">{{ user?.displayName }}</div>
-                <div class="ml-4 text-sm">{{ user?.email }}</div>
-              </div>
-            </div>
-            <Icon
-              name="iconoir:arrow-separate-vertical"
-              class="w-5 h-5"
-            />
-          </div>
-        </a>
-      </div>
+              <span class="sr-only">{{ item.name }}</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
     </div>
-    <main class="grow z-10">
-      <div class="flex mx-auto max-w-8xl px-4 sm:px-6 md:px-8 items-center justify-between h-16">
-        <div class="flex items-center">
-          <SubMenu
-            v-if="route.meta.menuItems"
-            :items="route.meta.menuItems"
-            class="mr-4"
+
+    <div class="lg:pl-20 h-full">
+      <div
+        class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8"
+      >
+        <button
+          type="button"
+          class="-m-2.5 p-2.5 text-gray-700 lg:hidden"
+          @click="sidebarOpen = true"
+        >
+          <span class="sr-only">Open sidebar</span>
+          <Icon
+            name="material-symbols:menu" 
+            class="h-6 w-6"
+            aria-hidden="true"
           />
-          <h1 class="text-2xl font-semibold text-gray-900 mr-6">
-            {{ route.meta.title }}
-          </h1>
-        </div>
-        <div class="flex gap-3">
-          <slot name="search" />
+        </button>
+
+        <!-- Separator -->
+        <div
+          class="h-6 w-px bg-gray-900/10 lg:hidden"
+          aria-hidden="true"
+        />
+
+        <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
+          <form
+            class="relative flex flex-1"
+            action="#"
+            method="GET"
+          >
+            <label
+              for="search-field"
+              class="sr-only"
+            >Search</label>
+            <Icon
+              name="mdi:magnify"
+              class="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400"
+              aria-hidden="true"
+            />
+            <input
+              id="search-field"
+              class="block h-full w-full border-0 py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
+              placeholder="Search..."
+              type="search"
+              name="search"
+            >
+          </form>
+          <div class="flex items-center gap-x-4 lg:gap-x-6">
+            <button
+              type="button"
+              class="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
+            >
+              <span class="sr-only">View notifications</span>
+              <Icon
+                name="material-symbols:notifications-rounded"
+                class="h-6 w-6"
+                aria-hidden="true"
+              />
+            </button>
+
+            <!-- Separator -->
+            <div
+              class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10"
+              aria-hidden="true"
+            />
+
+            <!-- Profile dropdown -->
+            <Menu
+              as="div"
+              class="relative"
+            >
+              <MenuButton class="-m-1.5 flex items-center p-1.5">
+                <span class="sr-only">Open user menu</span>
+                <img
+                  class="h-8 w-8 rounded-full bg-gray-50"
+                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                  alt=""
+                >
+                <span class="hidden lg:flex lg:items-center">
+                  <span
+                    class="ml-4 text-sm font-medium leading-6 text-gray-900"
+                    aria-hidden="true"
+                  >{{ user?.displayName }}</span>
+                  <Icon
+                    name="mdi:chevron-down"
+                    class="ml-2 h-5 w-5 text-gray-400"
+                    aria-hidden="true"
+                  />
+                </span>
+              </MenuButton>
+              <transition
+                enter-active-class="transition ease-out duration-100"
+                enter-from-class="transform opacity-0 scale-95"
+                enter-to-class="transform opacity-100 scale-100"
+                leave-active-class="transition ease-in duration-75"
+                leave-from-class="transform opacity-100 scale-100"
+                leave-to-class="transform opacity-0 scale-95"
+              >
+                <MenuItems
+                  class="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none"
+                >
+                  <MenuItem
+                    v-for="item in userNavigation"
+                    :key="item.name"
+                    v-slot="{ active }"
+                  >
+                    <a
+                      :href="item.href"
+                      :class="[active ? 'bg-gray-50' : '', 'block px-3 py-1 text-sm leading-6 text-gray-900']"
+                    >
+                      {{ item.name }}
+                    </a>
+                  </MenuItem>
+                </MenuItems>
+              </transition>
+            </Menu>
+          </div>
         </div>
       </div>
-      <div class="mx-auto max-w-8xl px-4 sm:px-6 md:px-8">
-        <!-- Replace with your content -->
+
+      <main class="xl:pl-96">
         <slot />
-        <!-- /End replace -->
-      </div>
-    </main>
+      </main>
+    </div>
+
+    <aside
+      class="fixed bottom-0 left-20 top-16 hidden w-96 overflow-y-auto border-r border-gray-200 px-4 py-6 sm:px-6 lg:px-8 xl:block"
+    >
+      <!-- Secondary column (hidden on smaller screens) -->
+    </aside>
   </div>
-  <!-- Component End  -->
 </template>
-
-<style lang="scss" scoped>
-.router-link-active {
-  @apply bg-slate-700 text-white;
-}
-
-.group:focus .group-focus\:visible {
-  display: block;
-}
-</style>

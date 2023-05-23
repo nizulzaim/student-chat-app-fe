@@ -9,8 +9,8 @@ import { useComposables } from "./composables/useComposables";
 // Module options TypeScript inteface definition
 export default defineNuxtModule<NaelDlsOptions>({
   meta: {
-    name: "@lapasar/dls",
-    configKey: "lapasarDls",
+    name: "@nael/dls",
+    configKey: "naelDls",
   },
   // Default configuration options of the Nuxt module
   defaults: {
@@ -73,6 +73,7 @@ export default defineNuxtModule<NaelDlsOptions>({
     }
 
     installModule("nuxt-icon", {}, nuxt);
+    console.log(options.colors)
     installModule(
       "@nuxtjs/tailwindcss",
       {

@@ -9,6 +9,7 @@ import { setContext } from 'apollo-link-context'
 import { useCookies } from '@vueuse/integrations/useCookies'
 import { provideApolloClient } from '@vue/apollo-composable'
 import { createUploadLink } from 'apollo-upload-client'
+import { loginRequest } from '~~/msal/config';
 
 const parseHeaders = (rawHeaders: any) => {
   const headers = new Headers()
@@ -66,25 +67,35 @@ export const customFetch = async (uri: string, options: any) => {
     return res
   }
 
+  const { instance } = useMsal()
+  const cookie = useCookies(['apollo:default.token'])
+
+  instance.acquireTokenSilent(loginRequest).then((response) => {
+    cookie.set('apollo:default.token', response.idToken)
+  })
+
   const res = await fetch(uri, options)
   return res
 }
 
 const createHttpLink = () => {
   return createUploadLink({
-    uri: 'http://localhost:6001/graphql',
+    uri: 'http://localhost:7070/graphql',
     fetch: customFetch as never,
   })
 }
 
 const authLink = setContext((_, { headers }) => {
-  const cookie = useCookies(['apollo:default.token'])
-
-  return {
-    headers: {
-      ...headers,
-      authorization: cookie.get('apollo:default.token') ? `Bearer ${cookie.get('apollo:default.token')}` : '',
-    },
+  try {
+    const cookie = useCookies(['apollo:default.token'])
+    return {
+      headers: {
+        ...headers,
+        authorization: cookie.get('apollo:default.token') ? `Bearer ${cookie.get('apollo:default.token')}` : '',
+      },
+    }
+  } catch (err) {
+    console.log(err)
   }
 })
 

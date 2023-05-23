@@ -1,19 +1,59 @@
 <script lang="ts" setup>
 import { useLoginWithPasswordMutation } from '~~/graphql'
+import { loginRequest } from '~~/msal/config';
+import UserInfo from '~~/types/user-info';
+import { InteractionRequiredAuthError, InteractionStatus, BrowserAuthError } from "@azure/msal-browser";
+
 const inputValue = ref({
   email: '',
   password: ''
 })
 
-const { onLogin, getToken } = useApollo()
+const { onLogin } = useApollo()
 const router = useRouter()
 
-onMounted(async () => {
-  const token = await getToken()
-  if (token) {
-    router.replace('/overview')
+onBeforeMount(async() => {
+  const isAuthenticated = useIsAuthenticated()
+  if (isAuthenticated.value) {
+    return router.replace('/conversation')
   }
+
+  await getGraphData()
 })
+
+const { instance, inProgress } = useMsal();
+
+const state = reactive({
+	resolved: false,
+	data: {} as UserInfo
+});
+
+async function getGraphData() {
+  const response = await instance.acquireTokenSilent({
+    ...loginRequest
+  }).catch(async (e) => {
+    if (e instanceof InteractionRequiredAuthError || e instanceof BrowserAuthError) {
+      console.log('interaction required')
+      await instance.acquireTokenRedirect(loginRequest);
+    }
+    throw e;
+  });
+	if (inProgress.value === InteractionStatus.None) {
+		const graphData = await useCallMsGraph(response.accessToken);
+     await onLogin(response.idToken)
+		state.data = graphData;
+		state.resolved = true;
+		stopWatcher();
+	}
+}
+
+const stopWatcher = watch(inProgress, () => {
+	if (!state.resolved) {
+		return getGraphData();
+	}
+  return router.replace('/conversation')
+});
+
 
 const { mutate: loginWithPassword } = useLoginWithPasswordMutation({})
 
@@ -22,7 +62,6 @@ const onLoginWithPassword = async () => {
 
   if (result?.data?.loginWithPassword) {
     await onLogin(result.data.loginWithPassword.token)
-    return router.replace('/overview')
   }
 
   inputValue.value = {
