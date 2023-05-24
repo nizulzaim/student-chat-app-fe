@@ -1,0 +1,5 @@
+subscription ConversationUpdated($userId: String!) {
+  conversationUpdated(userId: $userId) {
+    _id
+  }
+}

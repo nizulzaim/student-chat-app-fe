@@ -25,6 +25,7 @@ export type Conversation = {
   createdById: Scalars['ID'];
   isActive: Scalars['Boolean'];
   isDeleted: Scalars['Boolean'];
+  lastMessageAt: Scalars['DateTime'];
   numberOfUnread: Scalars['Int'];
   type: ConversationType;
   updatedAt: Scalars['DateTime'];
@@ -48,6 +49,7 @@ export type ConversationsSortArgs = {
 };
 
 export type CreateConversationInput = {
+  lastMessageAt: Scalars['DateTime'];
   type?: ConversationType;
   userIds: Array<Scalars['ID']>;
 };
@@ -303,7 +305,13 @@ export enum SortEnum {
 
 export type Subscription = {
   __typename?: 'Subscription';
+  conversationUpdated: Conversation;
   messageAdded: Message;
+};
+
+
+export type SubscriptionConversationUpdatedArgs = {
+  userId: Scalars['String'];
 };
 
 
@@ -363,6 +371,13 @@ export type ConversationsQueryVariables = Exact<{
 
 
 export type ConversationsQuery = { __typename?: 'Query', conversations: { __typename?: 'PaginatedConversation', items?: Array<{ __typename?: 'Conversation', _id: string, type: ConversationType, numberOfUnread: number, users: Array<{ __typename?: 'User', _id: string, displayName: string, email: string }> }> | null } };
+
+export type ConversationUpdatedSubscriptionVariables = Exact<{
+  userId: Scalars['String'];
+}>;
+
+
+export type ConversationUpdatedSubscription = { __typename?: 'Subscription', conversationUpdated: { __typename?: 'Conversation', _id: string } };
 
 export type CreateMessageMutationVariables = Exact<{
   input: CreateMessageInput;
@@ -464,6 +479,33 @@ export function useConversationsLazyQuery(variables: ConversationsQueryVariables
   return VueApolloComposable.useLazyQuery<ConversationsQuery, ConversationsQueryVariables>(ConversationsDocument, variables, options);
 }
 export type ConversationsQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<ConversationsQuery, ConversationsQueryVariables>;
+export const ConversationUpdatedDocument = gql`
+    subscription ConversationUpdated($userId: String!) {
+  conversationUpdated(userId: $userId) {
+    _id
+  }
+}
+    `;
+
+/**
+ * __useConversationUpdatedSubscription__
+ *
+ * To run a query within a Vue component, call `useConversationUpdatedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useConversationUpdatedSubscription` returns an object from Apollo Client that contains result, loading and error properties
+ * you can use to render your UI.
+ *
+ * @param variables that will be passed into the subscription
+ * @param options that will be passed into the subscription, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/subscription.html#options;
+ *
+ * @example
+ * const { result, loading, error } = useConversationUpdatedSubscription({
+ *   userId: // value for 'userId'
+ * });
+ */
+export function useConversationUpdatedSubscription(variables: ConversationUpdatedSubscriptionVariables | VueCompositionApi.Ref<ConversationUpdatedSubscriptionVariables> | ReactiveFunction<ConversationUpdatedSubscriptionVariables>, options: VueApolloComposable.UseSubscriptionOptions<ConversationUpdatedSubscription, ConversationUpdatedSubscriptionVariables> | VueCompositionApi.Ref<VueApolloComposable.UseSubscriptionOptions<ConversationUpdatedSubscription, ConversationUpdatedSubscriptionVariables>> | ReactiveFunction<VueApolloComposable.UseSubscriptionOptions<ConversationUpdatedSubscription, ConversationUpdatedSubscriptionVariables>> = {}) {
+  return VueApolloComposable.useSubscription<ConversationUpdatedSubscription, ConversationUpdatedSubscriptionVariables>(ConversationUpdatedDocument, variables, options);
+}
+export type ConversationUpdatedSubscriptionCompositionFunctionResult = VueApolloComposable.UseSubscriptionReturn<ConversationUpdatedSubscription, ConversationUpdatedSubscriptionVariables>;
 export const CreateMessageDocument = gql`
     mutation CreateMessage($input: CreateMessageInput!) {
   createMessage(input: $input) {

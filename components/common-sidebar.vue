@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { useConversationsQuery } from '~~/graphql'
+import { useConversationsQuery, useConversationUpdatedSubscription } from '~~/graphql'
 
-const { result } = useConversationsQuery({ input: {}, sort: {} })
+const { result, refetch } = useConversationsQuery({ input: {}, sort: {} })
 const { user } = useCurrentUser()
-
+const {variables, result: subsResult} = useConversationUpdatedSubscription({userId: user.value?._id as string ?? ''})
 type ConversationsList = {
   _id: string
   name: string
@@ -22,6 +22,16 @@ const conversationsLists = computed<ConversationsList[]>(() => {
       _id: i._id
     }
   }) ?? []
+})
+
+watch(() => subsResult.value, () => {
+  refetch()
+})
+
+watch(() => user.value, (value) => {
+  if (value) {
+    variables.value = {userId: value._id}
+  }
 })
 </script>
 
@@ -44,7 +54,10 @@ const conversationsLists = computed<ConversationsList[]>(() => {
         />
         <div class="flex flex-grow items-center justify-between">
           <div class="min-w-0">
-            <p class="text-sm font-semibold leading-4 text-gray-900">
+            <p
+              class="text-sm font-medium leading-4 text-gray-900"
+              :class="[list.unread ? 'font-semibold': 'font-medium']"
+            >
               {{ list.name }}
             </p>
             <p class="mt-1 truncate text-xs leading-5 text-gray-500">

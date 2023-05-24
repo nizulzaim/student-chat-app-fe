@@ -21,7 +21,7 @@ type MessageList = {
   conversationId: string
 }
 const messageLists = ref<MessageList[]>([])
-
+const input = ref('')
 
 const updateMessageLists = ({smooth = true}: {smooth?: boolean}) => {
   messageLists.value = result.value?.messages?.items?.map(i => {
@@ -35,16 +35,16 @@ const updateMessageLists = ({smooth = true}: {smooth?: boolean}) => {
     }
   }).reverse() ?? []
   setTimeout(() => {
-    scrollToBottom($chatbox.value as HTMLDivElement, true)
+    scrollToBottom($chatbox.value as HTMLDivElement, smooth)
   }, 200)
 }
 
 watch(() => result.value, (value) => {
-  updateMessageLists({smooth: true})
+  updateMessageLists({smooth: false})
 })
 
 updateMessageLists({smooth: false})
-const input = ref('')
+
 const submit = async () => {
   if (input.value.trim() === '') return;
   messageLists.value.push({

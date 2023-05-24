@@ -27,24 +27,25 @@ const userNavigation = [
 ]
 
 const router = useRouter()
-onBeforeMount(() => {
-  const isAuthenticated = useIsAuthenticated()
-  if (!isAuthenticated.value) {
-    return router.replace('/')
+const cookie = useCookie('apollo:default.token', { path: '/' })
+onBeforeMount(async () => {
+  try {
+    const response = await instance.acquireTokenSilent(loginRequest)
+    cookie.value = response.idToken
+  } catch(err) {
+    router.replace('/')
   }
 })
 const { instance } = useMsal()
 
-router.beforeEach((to, from, next) => {
-  const cookie = useCookie('apollo:default.token', { path: '/' })
-
-  instance.acquireTokenSilent(loginRequest).then((response) => {
+router.beforeEach(async (to, from, next) => {
+  try {
+    const response = await instance.acquireTokenSilent(loginRequest)
     cookie.value = response.idToken
-  }).catch(() => {
-    router.replace('/')
-  }).finally(() => {
     next()
-  })
+  } catch(err) {
+    router.replace('/')
+  }
 })
 
 const { user } = useCurrentUser()
