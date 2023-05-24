@@ -11,6 +11,12 @@ import {
   TransitionChild,
   TransitionRoot,
 } from '@headlessui/vue'
+import { loginRequest } from '~~/msal/config';
+import { useCookies } from '@vueuse/integrations/useCookies';
+
+const queryLoading = useGlobalQueryLoading()
+const mutationLoading = useGlobalMutationLoading()
+const subscriptionLoading = useSubscriptionLoading()
 
 const navigation = [
   { name: 'Dashboard', href: '#', icon: 'uim:house-user', current: true },
@@ -36,7 +42,30 @@ onBeforeMount(() => {
 const { user } = useCurrentUser()
 const sidebarOpen = ref(false)
 
-console.log(user)
+onMounted(() => {
+  getNewToken()
+})
+
+const getNewToken = async () => {
+  const { instance } = useMsal()
+  const cookie = useCookie('apollo:default.token', { path: '/' })
+
+  instance.acquireTokenSilent(loginRequest).then((response) => {
+    cookie.value = response.idToken
+  })
+}
+
+// watch(() => queryLoading.value, (value) => {
+//   if (value) getNewToken()
+// })
+
+// watch(() => mutationLoading.value, (value) => {
+//   if (value) getNewToken()
+// })
+
+// watch(() => subscriptionLoading.value, (value) => {
+//   if (value) getNewToken()
+// })
 </script>
 
 <template>
@@ -164,7 +193,7 @@ console.log(user)
       </nav>
     </div>
 
-    <div class="lg:pl-20 h-full">
+    <div class="lg:pl-20 h-full flex flex-col">
       <div
         class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8"
       >
@@ -283,15 +312,15 @@ console.log(user)
         </div>
       </div>
 
-      <main class="xl:pl-96">
+      <main class="xl:pl-96 flex-1 flex flex-col">
         <slot />
       </main>
     </div>
 
     <aside
-      class="fixed bottom-0 left-20 top-16 hidden w-96 overflow-y-auto border-r border-gray-200 px-4 py-6 sm:px-6 lg:px-8 xl:block"
+      class="fixed bottom-0 left-20 top-16 hidden w-96 overflow-y-auto border-r border-gray-200 xl:block"
     >
-      <!-- Secondary column (hidden on smaller screens) -->
+      <slot name="sidebar" />
     </aside>
   </div>
 </template>

@@ -1,0 +1,13 @@
+query Conversations($input: FindAllConversationsInput!, $sort: ConversationsSortArgs!) {
+  conversations(input: $input, sort: $sort) {
+    items {
+      users {
+        _id
+        displayName
+        email
+      }
+      _id
+      type
+    }
+  }
+}

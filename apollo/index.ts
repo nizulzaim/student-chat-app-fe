@@ -1,15 +1,13 @@
-import {
-  ApolloClient,
-  InMemoryCache,
-  from,
-} from '@apollo/client/core'
+import { ApolloClient, InMemoryCache, from, split } from '@apollo/client/core'
 import type { ErrorResponse } from '@apollo/client/link/error'
 import { onError } from '@apollo/client/link/error'
 import { setContext } from 'apollo-link-context'
 import { useCookies } from '@vueuse/integrations/useCookies'
 import { provideApolloClient } from '@vue/apollo-composable'
 import { createUploadLink } from 'apollo-upload-client'
-import { loginRequest } from '~~/msal/config';
+import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
+import { createClient } from "graphql-ws";
+import { getMainDefinition } from "@apollo/client/utilities"
 
 const parseHeaders = (rawHeaders: any) => {
   const headers = new Headers()
@@ -35,10 +33,7 @@ export const uploadFetch = (url: string, options: any) =>
         statusText: xhr.statusText,
         headers: parseHeaders(xhr.getAllResponseHeaders() || ''),
       }
-      opts.url
-        = 'responseURL' in xhr
-          ? xhr.responseURL
-          : opts.headers.get('X-Request-URL')
+      opts.url = 'responseURL' in xhr ? xhr.responseURL : opts.headers.get('X-Request-URL')
 
       const body = 'response' in xhr ? xhr.response : (xhr as any).responseText
       resolve(new Response(body, opts))
@@ -55,8 +50,7 @@ export const uploadFetch = (url: string, options: any) =>
       xhr.setRequestHeader(key, options.headers[key])
     })
 
-    if (xhr.upload)
-      xhr.upload.onprogress = options.onProgress
+    if (xhr.upload) xhr.upload.onprogress = options.onProgress
 
     xhr.send(options.body)
   })
@@ -66,13 +60,6 @@ export const customFetch = async (uri: string, options: any) => {
     const res = uploadFetch(uri, options)
     return res
   }
-
-  const { instance } = useMsal()
-  const cookie = useCookies(['apollo:default.token'])
-
-  instance.acquireTokenSilent(loginRequest).then((response) => {
-    cookie.set('apollo:default.token', response.idToken)
-  })
 
   const res = await fetch(uri, options)
   return res
@@ -85,13 +72,26 @@ const createHttpLink = () => {
   })
 }
 
+const wsLink =
+  typeof window !== "undefined"
+    ? new GraphQLWsLink(
+      createClient({
+        url: "ws://localhost:7070/graphql",
+      })
+    )
+    : null;
+
+
+
 const authLink = setContext((_, { headers }) => {
   try {
     const cookie = useCookies(['apollo:default.token'])
     return {
       headers: {
         ...headers,
-        authorization: cookie.get('apollo:default.token') ? `Bearer ${cookie.get('apollo:default.token')}` : '',
+        authorization: cookie.get('apollo:default.token')
+          ? `Bearer ${cookie.get('apollo:default.token')}`
+          : '',
       },
     }
   } catch (err) {
@@ -123,17 +123,30 @@ const errorLink = onError((error: ErrorResponse) => {
 const cache = new InMemoryCache()
 
 const createApolloClient = () => {
-  return new ApolloClient({
-    link: from([errorLink.concat(authLink as any), createHttpLink()]),
-    cache,
-    defaultOptions: {
-      watchQuery: {
-        fetchPolicy: 'network-only',
-      },
-      query: {
-        fetchPolicy: 'network-only',
-      },
+  const link = wsLink ? split(
+    // split based on operation type
+    ({ query }) => {
+      const definition = getMainDefinition(query)
+      return (
+        definition.kind === "OperationDefinition" &&
+        definition.operation === "subscription"
+      )
     },
+    wsLink,
+    createHttpLink()
+  ) : createHttpLink()
+
+  return new ApolloClient({
+    link: from([errorLink.concat(authLink as any), link]),
+    cache,
+    // defaultOptions: {
+    //   watchQuery: {
+    //     fetchPolicy: 'network-only',
+    //   },
+    //   query: {
+    //     fetchPolicy: 'network-only',
+    //   },
+    // },
   })
 }
 // Create the apollo client

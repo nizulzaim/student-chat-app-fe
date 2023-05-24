@@ -1,0 +1,16 @@
+
+
+
+subscription MessageAdded($conversationId: String!) {
+  messageAdded(conversationId: $conversationId) {
+    _id
+    createdAt
+    createdBy {
+      email
+      displayName
+    }
+    createdById
+    text
+    conversationId
+  }
+}

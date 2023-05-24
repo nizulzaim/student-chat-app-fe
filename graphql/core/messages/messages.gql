@@ -1,0 +1,19 @@
+query Messages($input: FindAllMessagesInput!, $sort: MessagesSortArgs!) {
+  messages(input: $input, sort: $sort) {
+    count
+    hasNextPage
+    hasPreviousPage
+    page
+    items {
+      _id
+      createdAt
+      createdBy {
+        email
+        displayName
+      }
+      createdById
+      text
+      conversationId
+    }
+  }
+}
