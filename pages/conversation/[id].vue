@@ -119,7 +119,7 @@ watch(() => addedResult.value, async (value) => {
               class="flex w-full mt-2 space-x-3 max-w-xl ml-auto justify-end"
             >
               <div>
-                <div class="bg-accent-600 text-white p-3 rounded-l-lg rounded-br-lg">
+                <div class="bg-accent-800 text-white p-3 rounded-l-lg rounded-br-lg">
                   <p class="text-sm">
                     {{ message.content }}
                   </p>

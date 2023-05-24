@@ -9,6 +9,7 @@ type ConversationsList = {
   name: string
   email: string
   imageUrl?: string
+  unread: number
 }
 const conversationsLists = computed<ConversationsList[]>(() => {
   return result.value?.conversations?.items?.filter(i => i.users.length > 1).map(i => {
@@ -17,6 +18,7 @@ const conversationsLists = computed<ConversationsList[]>(() => {
     return {
       name: interactIds[0].displayName,
       email: interactIds[0].email,
+      unread: i.numberOfUnread,
       _id: i._id
     }
   }) ?? []
@@ -40,13 +42,21 @@ const conversationsLists = computed<ConversationsList[]>(() => {
           :src="list.imageUrl"
           class="flex-none"
         />
-        <div class="min-w-0">
-          <p class="text-sm font-semibold leading-4 text-gray-900">
-            {{ list.name }}
-          </p>
-          <p class="mt-1 truncate text-xs leading-5 text-gray-500">
-            {{ list.email }}
-          </p>
+        <div class="flex flex-grow items-center justify-between">
+          <div class="min-w-0">
+            <p class="text-sm font-semibold leading-4 text-gray-900">
+              {{ list.name }}
+            </p>
+            <p class="mt-1 truncate text-xs leading-5 text-gray-500">
+              {{ list.email }}
+            </p>
+          </div>
+          <div class="w-6">
+            <span
+              v-if="list.unread > 0"
+              class="inline-flex items-center rounded-full bg-accent-900 px-2 py-1 text-xs font-medium text-white"
+            >{{ list.unread }}</span>
+          </div>
         </div>
       </NuxtLink>
     </li>

@@ -25,12 +25,14 @@ export type Conversation = {
   createdById: Scalars['ID'];
   isActive: Scalars['Boolean'];
   isDeleted: Scalars['Boolean'];
+  numberOfUnread: Scalars['Int'];
   type: ConversationType;
   updatedAt: Scalars['DateTime'];
   updatedBy: User;
   updatedById: Scalars['ID'];
   userIds: Array<Scalars['ID']>;
   users: Array<User>;
+  usersMeta: Array<UserMeta>;
 };
 
 export enum ConversationType {
@@ -334,6 +336,12 @@ export type User = {
   updatedById: Scalars['ID'];
 };
 
+export type UserMeta = {
+  __typename?: 'UserMeta';
+  lastReadAt: Scalars['DateTime'];
+  userId: Array<Scalars['ID']>;
+};
+
 export type UsersSortArgs = {
   email?: InputMaybe<SortEnum>;
   firstName?: InputMaybe<SortEnum>;
@@ -354,7 +362,7 @@ export type ConversationsQueryVariables = Exact<{
 }>;
 
 
-export type ConversationsQuery = { __typename?: 'Query', conversations: { __typename?: 'PaginatedConversation', items?: Array<{ __typename?: 'Conversation', _id: string, type: ConversationType, users: Array<{ __typename?: 'User', _id: string, displayName: string, email: string }> }> | null } };
+export type ConversationsQuery = { __typename?: 'Query', conversations: { __typename?: 'PaginatedConversation', items?: Array<{ __typename?: 'Conversation', _id: string, type: ConversationType, numberOfUnread: number, users: Array<{ __typename?: 'User', _id: string, displayName: string, email: string }> }> | null } };
 
 export type CreateMessageMutationVariables = Exact<{
   input: CreateMessageInput;
@@ -427,6 +435,7 @@ export const ConversationsDocument = gql`
       }
       _id
       type
+      numberOfUnread
     }
   }
 }

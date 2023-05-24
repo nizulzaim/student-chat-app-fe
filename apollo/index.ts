@@ -139,14 +139,14 @@ const createApolloClient = () => {
   return new ApolloClient({
     link: from([errorLink.concat(authLink as any), link]),
     cache,
-    // defaultOptions: {
-    //   watchQuery: {
-    //     fetchPolicy: 'network-only',
-    //   },
-    //   query: {
-    //     fetchPolicy: 'network-only',
-    //   },
-    // },
+    defaultOptions: {
+      watchQuery: {
+        fetchPolicy: 'cache-and-network',
+      },
+      query: {
+        fetchPolicy: 'network-only',
+      },
+    },
   })
 }
 // Create the apollo client

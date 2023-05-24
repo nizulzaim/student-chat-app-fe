@@ -12,11 +12,6 @@ import {
   TransitionRoot,
 } from '@headlessui/vue'
 import { loginRequest } from '~~/msal/config';
-import { useCookies } from '@vueuse/integrations/useCookies';
-
-const queryLoading = useGlobalQueryLoading()
-const mutationLoading = useGlobalMutationLoading()
-const subscriptionLoading = useSubscriptionLoading()
 
 const navigation = [
   { name: 'Dashboard', href: '#', icon: 'uim:house-user', current: true },
@@ -38,34 +33,22 @@ onBeforeMount(() => {
     return router.replace('/')
   }
 })
+const { instance } = useMsal()
 
-const { user } = useCurrentUser()
-const sidebarOpen = ref(false)
-
-onMounted(() => {
-  getNewToken()
-})
-
-const getNewToken = async () => {
-  const { instance } = useMsal()
+router.beforeEach((to, from, next) => {
   const cookie = useCookie('apollo:default.token', { path: '/' })
 
   instance.acquireTokenSilent(loginRequest).then((response) => {
     cookie.value = response.idToken
+  }).catch(() => {
+    router.replace('/')
+  }).finally(() => {
+    next()
   })
-}
+})
 
-// watch(() => queryLoading.value, (value) => {
-//   if (value) getNewToken()
-// })
-
-// watch(() => mutationLoading.value, (value) => {
-//   if (value) getNewToken()
-// })
-
-// watch(() => subscriptionLoading.value, (value) => {
-//   if (value) getNewToken()
-// })
+const { user } = useCurrentUser()
+const sidebarOpen = ref(false)
 </script>
 
 <template>
