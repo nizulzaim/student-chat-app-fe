@@ -3,7 +3,7 @@ import type { CodegenConfig } from '@graphql-codegen/cli'
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema: 'http://localhost:7070/graphql',
+  schema: 'https://utm-chat-api.nael.my/graphql',
   documents: ['./graphql/**/*.gql'],
   verbose: true,
   generates: {

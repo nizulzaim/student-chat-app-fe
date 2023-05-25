@@ -67,7 +67,7 @@ export const customFetch = async (uri: string, options: any) => {
 
 const createHttpLink = () => {
   return createUploadLink({
-    uri: 'http://localhost:7070/graphql',
+    uri: 'https://utm-chat-api.nael.my/graphql',
     fetch: customFetch as never,
   })
 }
@@ -76,7 +76,7 @@ const wsLink =
   typeof window !== "undefined"
     ? new GraphQLWsLink(
       createClient({
-        url: "ws://localhost:7070/graphql",
+        url: "wss://utm-chat-api.nael.my/graphql",
       })
     )
     : null;
