@@ -25,7 +25,7 @@ export type Conversation = {
   createdById: Scalars['ID'];
   isActive: Scalars['Boolean'];
   isDeleted: Scalars['Boolean'];
-  lastMessageAt: Scalars['DateTime'];
+  lastMessageAt?: Maybe<Scalars['DateTime']>;
   numberOfUnread: Scalars['Int'];
   type: ConversationType;
   updatedAt: Scalars['DateTime'];
@@ -49,7 +49,7 @@ export type ConversationsSortArgs = {
 };
 
 export type CreateConversationInput = {
-  lastMessageAt: Scalars['DateTime'];
+  lastMessageAt?: InputMaybe<Scalars['DateTime']>;
   type?: ConversationType;
   userIds: Array<Scalars['ID']>;
 };
@@ -372,6 +372,13 @@ export type ConversationsQueryVariables = Exact<{
 
 export type ConversationsQuery = { __typename?: 'Query', conversations: { __typename?: 'PaginatedConversation', items?: Array<{ __typename?: 'Conversation', _id: string, type: ConversationType, numberOfUnread: number, users: Array<{ __typename?: 'User', _id: string, displayName: string, email: string }> }> | null } };
 
+export type CreateConversationMutationVariables = Exact<{
+  input: CreateConversationInput;
+}>;
+
+
+export type CreateConversationMutation = { __typename?: 'Mutation', createConversation: { __typename?: 'Conversation', _id: string } };
+
 export type ConversationUpdatedSubscriptionVariables = Exact<{
   userId: Scalars['String'];
 }>;
@@ -405,6 +412,14 @@ export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'User', _id: string, createdAt: any, email: string, firstName: string, displayName: string, isActive: boolean, lastName: string, timezone: string, updatedAt: any } };
+
+export type UsersQueryVariables = Exact<{
+  query: FindAllUsersInput;
+  sort?: InputMaybe<UsersSortArgs>;
+}>;
+
+
+export type UsersQuery = { __typename?: 'Query', users: { __typename?: 'PaginatedUsers', count: number, hasNextPage: boolean, hasPreviousPage: boolean, items?: Array<{ __typename?: 'User', _id: string, displayName: string, email: string }> | null } };
 
 
 export const LoginWithPasswordDocument = gql`
@@ -479,6 +494,35 @@ export function useConversationsLazyQuery(variables: ConversationsQueryVariables
   return VueApolloComposable.useLazyQuery<ConversationsQuery, ConversationsQueryVariables>(ConversationsDocument, variables, options);
 }
 export type ConversationsQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<ConversationsQuery, ConversationsQueryVariables>;
+export const CreateConversationDocument = gql`
+    mutation CreateConversation($input: CreateConversationInput!) {
+  createConversation(input: $input) {
+    _id
+  }
+}
+    `;
+
+/**
+ * __useCreateConversationMutation__
+ *
+ * To run a mutation, you first call `useCreateConversationMutation` within a Vue component and pass it any options that fit your needs.
+ * When your component renders, `useCreateConversationMutation` returns an object that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - Several other properties: https://v4.apollo.vuejs.org/api/use-mutation.html#return
+ *
+ * @param options that will be passed into the mutation, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/mutation.html#options;
+ *
+ * @example
+ * const { mutate, loading, error, onDone } = useCreateConversationMutation({
+ *   variables: {
+ *     input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateConversationMutation(options: VueApolloComposable.UseMutationOptions<CreateConversationMutation, CreateConversationMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<CreateConversationMutation, CreateConversationMutationVariables>> = {}) {
+  return VueApolloComposable.useMutation<CreateConversationMutation, CreateConversationMutationVariables>(CreateConversationDocument, options);
+}
+export type CreateConversationMutationCompositionFunctionResult = VueApolloComposable.UseMutationReturn<CreateConversationMutation, CreateConversationMutationVariables>;
 export const ConversationUpdatedDocument = gql`
     subscription ConversationUpdated($userId: String!) {
   conversationUpdated(userId: $userId) {
@@ -652,3 +696,41 @@ export function useCurrentUserLazyQuery(options: VueApolloComposable.UseQueryOpt
   return VueApolloComposable.useLazyQuery<CurrentUserQuery, CurrentUserQueryVariables>(CurrentUserDocument, {}, options);
 }
 export type CurrentUserQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<CurrentUserQuery, CurrentUserQueryVariables>;
+export const UsersDocument = gql`
+    query Users($query: FindAllUsersInput!, $sort: UsersSortArgs) {
+  users(query: $query, sort: $sort) {
+    count
+    hasNextPage
+    hasPreviousPage
+    items {
+      _id
+      displayName
+      email
+    }
+  }
+}
+    `;
+
+/**
+ * __useUsersQuery__
+ *
+ * To run a query within a Vue component, call `useUsersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUsersQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * you can use to render your UI.
+ *
+ * @param variables that will be passed into the query
+ * @param options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
+ *
+ * @example
+ * const { result, loading, error } = useUsersQuery({
+ *   query: // value for 'query'
+ *   sort: // value for 'sort'
+ * });
+ */
+export function useUsersQuery(variables: UsersQueryVariables | VueCompositionApi.Ref<UsersQueryVariables> | ReactiveFunction<UsersQueryVariables>, options: VueApolloComposable.UseQueryOptions<UsersQuery, UsersQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<UsersQuery, UsersQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<UsersQuery, UsersQueryVariables>> = {}) {
+  return VueApolloComposable.useQuery<UsersQuery, UsersQueryVariables>(UsersDocument, variables, options);
+}
+export function useUsersLazyQuery(variables: UsersQueryVariables | VueCompositionApi.Ref<UsersQueryVariables> | ReactiveFunction<UsersQueryVariables>, options: VueApolloComposable.UseQueryOptions<UsersQuery, UsersQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<UsersQuery, UsersQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<UsersQuery, UsersQueryVariables>> = {}) {
+  return VueApolloComposable.useLazyQuery<UsersQuery, UsersQueryVariables>(UsersDocument, variables, options);
+}
+export type UsersQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<UsersQuery, UsersQueryVariables>;

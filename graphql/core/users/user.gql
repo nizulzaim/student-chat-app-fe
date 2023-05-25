@@ -1,0 +1,12 @@
+query Users($query: FindAllUsersInput!, $sort: UsersSortArgs) {
+  users(query: $query, sort: $sort) {
+    count
+    hasNextPage
+    hasPreviousPage
+    items {
+      _id
+      displayName
+      email
+    }
+  }
+}
