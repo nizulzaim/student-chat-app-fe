@@ -17,7 +17,7 @@ export default defineNuxtConfig({
         '900': '#74460f',
       },
       accent: {
-        DEFAULT: 'ff2738',
+        DEFAULT: '#ff2738',
         '50': '#fff0f1',
         '100': '#ffdde0',
         '200': '#ffc1c6',
