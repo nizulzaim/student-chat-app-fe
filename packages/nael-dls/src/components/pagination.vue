@@ -5,7 +5,7 @@ import NlButton from './button.vue'
 type Props = {
   data?: {
     page: number;
-    total: number;
+    count: number;
     hasNextPage: boolean,
     hasPreviousPage: boolean,
     items: any[]
@@ -38,7 +38,7 @@ const endNumber = computed(() => (props.data?.items.length ?? 0) + (props.limit 
         {{ ' ' }}
         of
         {{ ' ' }}
-        <span class="font-medium">{{ props.data?.total }}</span>
+        <span class="font-medium">{{ props.data?.count }}</span>
         {{ ' ' }}
         results
       </p>

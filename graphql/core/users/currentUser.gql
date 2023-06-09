@@ -9,5 +9,6 @@ query CurrentUser {
     lastName
     timezone
     updatedAt
+    type
   }
 }

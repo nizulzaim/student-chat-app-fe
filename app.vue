@@ -1,17 +1,6 @@
 <script lang="ts" setup>
-import { provideApolloClient } from '@vue/apollo-composable';
-import {apolloClient} from './apollo'
-import { useIntervalFn } from '@vueuse/core';
-import { loginRequest } from './msal/config';
-const { instance } = useMsal()
-const cookie = useCookie('apollo:default.token', { path: '/' })
-provideApolloClient(apolloClient())
-
-useIntervalFn(() => {
-  instance.acquireTokenSilent(loginRequest).then((response) => {
-    cookie.value = response.idToken
-  })
-}, 60000 * 5)
+import useApolloClient from './apollo'
+useApolloClient()
 </script>
 
 <template>

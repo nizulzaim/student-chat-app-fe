@@ -11,36 +11,30 @@ import {
   TransitionChild,
   TransitionRoot,
 } from '@headlessui/vue'
-import { loginRequest } from '~~/msal/config';
+import { UserType } from '~~/graphql';
 
-const navigation = [
-  { name: 'Dashboard', href: '#', icon: 'uim:house-user', current: true },
-  { name: 'Team', href: '#', icon: "uim:user-nurse", current: false },
-  // { name: 'Projects', href: '#', icon: FolderIcon, current: false },
-  // { name: 'Calendar', href: '#', icon: CalendarIcon, current: false },
-  // { name: 'Documents', href: '#', icon: DocumentDuplicateIcon, current: false },
-  // { name: 'Reports', href: '#', icon: ChartPieIcon, current: false },
-]
+const navigation = ref([
+  { name: 'Dashboard', href: '/conversation', icon: 'uim:comment-alt-message', current: true },
+  
+]);
+
 const userNavigation = [
-  { name: 'Your profile', href: '#' },
+  { name: 'Your profile', href: '' },
   { name: 'Sign out', href: '#' },
 ]
 
-const router = useRouter()
-const cookie = useCookie('apollo:default.token', { path: '/' })
-const { instance } = useMsal()
-
-onBeforeMount(async () => {
-  try {
-    const response = await instance.acquireTokenSilent(loginRequest)
-    cookie.value = response.idToken
-  } catch(err) {
-    router.push('/')
-  }
-})
-
 const { user } = useCurrentUser()
 const sidebarOpen = ref(false)
+
+watch(() => user.value, () => {
+  if (user.value?.type === UserType.Lecturer) {
+    navigation.value.push({ name: 'Lecturer', href: '/lecturer', icon: "uim:user-nurse", current: false },)
+  }
+
+  if (user.value?.type === UserType.Admin) {
+    navigation.value.push({ name: 'Settings', href: '/administration', icon: "uim:briefcase", current: false },)
+  }
+})
 </script>
 
 <template>
@@ -152,8 +146,8 @@ const sidebarOpen = ref(false)
             v-for="item in navigation"
             :key="item.name"
           >
-            <a
-              :href="item.href"
+            <RouterLink
+              :to="item.href"
               :class="[item.current ? 'bg-gray-800 text-white' : 'text-gray-200 hover:text-white hover:bg-gray-800', 'group flex gap-x-3 rounded-md p-3 text-sm leading-6 font-semibold']"
             >
               <Icon
@@ -162,7 +156,7 @@ const sidebarOpen = ref(false)
                 aria-hidden="true"
               />
               <span class="sr-only">{{ item.name }}</span>
-            </a>
+            </RouterLink>
           </li>
         </ul>
       </nav>

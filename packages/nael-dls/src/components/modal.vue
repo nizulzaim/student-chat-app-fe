@@ -21,7 +21,7 @@ const close = () => {
   >
     <Dialog
       as="div"
-      class="relative z-10"
+      class="relative z-50"
       @close="close"
     >
       <div class="fixed inset crystalline opacity-95" />

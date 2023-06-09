@@ -1,18 +1,22 @@
 <script lang="ts" setup>
-import { useSharedVariable } from './shared';
 import CreateUpdate from './create-update.vue'
+import { useSharedVariable } from '.';
 import { useDateFormat } from '@vueuse/core'
 const searchText = ref('')
-const { createUpdateState, organizations, organizationsLoading: loading, updateSearch, organizationsResult, defaultQuery, selectedId } = useSharedVariable()
+const { createUpdateState, faculties, facultiesLoading: loading, updateSearch, facultiesResult, defaultQuery, query } = useSharedVariable()
+
 const showDetails = (id: string) => {
-  selectedId.value = id
+  query._id = id
   createUpdateState.value = true
 }
 </script>
 
 <template>
-  <NuxtLayout>
-    <template #search>
+  <div>
+    <div class="flex justify-between mb-10">
+      <div class="text-3xl font-semibold">
+        Manage Faculties
+      </div>
       <div class="flex gap-2 items-center">
         <NlTextfield
           v-model="searchText"
@@ -31,22 +35,22 @@ const showDetails = (id: string) => {
         </NlTextfield>
         <NlButton
           size="sm"
-          button-type="gradient-4"
+          button-type="primary"
           class="shadow-lg shadow-primary-500/50"
           @click="createUpdateState = true"
         >
-          Register Organization
+          Register Faculty
         </NlButton>
       </div>
-    </template>
+    </div>
+
     <div class="py-6">
       <NlDatatable>
         <template
-          v-if="loading || organizations.length > 0"
+          v-if="loading || faculties.length > 0"
           #head
         >
           <NlTh>Organization Name</NlTh>
-          <NlTh>Owner</NlTh>
           <NlTh>Last Update At</NlTh>
           <NlTh>Status</NlTh>
           <NlTh>
@@ -65,9 +69,6 @@ const showDetails = (id: string) => {
           <NlTcol>
             <NlLoader class="w-40 h-6" />
           </NlTcol>
-          <NlTcol>
-            <NlLoader class="w-40 h-6" />
-          </NlTcol>
           <NlTcol class="w-20">
             <NlLoader class="w-10 h-8" />
           </NlTcol>
@@ -75,35 +76,16 @@ const showDetails = (id: string) => {
 
         <ClientOnly>
           <NlTrow
-            v-for="organization in organizations"
-            v-if="!loading"
-            :key="organization._id"
+            v-for="faculty in faculties"
+            :key="faculty._id"
           >
             <NlTcol>
-              <div class="font-medium text-gray-600">
-                {{ organization.name }}
-              </div>
-              <div>{{ organization.internalName }}</div>
+              {{ faculty.name }}
             </NlTcol>
-            <NlTcol>
-              <div class="flex items-center">
-                <NlAvatar
-                  circle
-                  :src="organization.owner.pictureUrl"
-                  size="sm"
-                />
-                <div class="ml-3">
-                  <div class="font-medium text-gray-600">
-                    {{ organization.owner.displayName }}
-                  </div>
-                  <div>{{ organization.owner.email }}</div>
-                </div>
-              </div>
-            </NlTcol>
-            <NlTcol>{{ useDateFormat(organization.updatedAt, 'DD MMM YYYY HH:mm A').value }}</NlTcol>
+            <NlTcol>{{ useDateFormat(faculty.updatedAt, 'DD MMM YYYY HH:mm A').value }}</NlTcol>
             <NlTcol>
               <NlBadge
-                v-if="organization.isActive"
+                v-if="faculty.isActive"
                 color="green"
                 :circle="false"
               >
@@ -122,7 +104,7 @@ const showDetails = (id: string) => {
                 button-type="box"
                 size="xs"
                 class="shadow"
-                @click="showDetails(organization._id)"
+                @click="() => showDetails(faculty._id)"
               >
                 <Icon
                   name="material-symbols:edit-document-outline"
@@ -134,13 +116,13 @@ const showDetails = (id: string) => {
         </ClientOnly>
         <template #footer>
           <NlPagination
-            :data="organizationsResult?.organizations"
+            :data="facultiesResult?.faculties"
             @next="defaultQuery.page++"
             @previous="defaultQuery.page--"
           />
         </template>
       </NlDatatable>
-      <div v-if="!loading && organizations.length === 0">
+      <div v-if="!loading && faculties.length === 0">
         <EmptyState
           title="No Organization found"
           subtitle="Create new organization to get started"
@@ -150,6 +132,5 @@ const showDetails = (id: string) => {
       </div>
       <CreateUpdate />
     </div>
-  </NuxtLayout>
+  </div>
 </template>
-

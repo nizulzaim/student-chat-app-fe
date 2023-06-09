@@ -1,0 +1,37 @@
+query Faculties($query: FindAllFacultiesInput!, $sort: FacultiesSortArgs) {
+  faculties(query: $query, sort: $sort) {
+    items {
+      _id
+      updatedAt
+      name
+      isActive
+    }
+    count
+    hasNextPage
+    hasPreviousPage
+    page
+  }
+}
+
+query Faculty($query: FindOneFacultyInput!) {
+  faculty(query: $query) {
+    _id
+    createdAt
+    updatedAt
+    slug
+    name
+    isActive
+  }
+}
+
+mutation CreateFaculty($input: CreateFacultyInput!) {
+  createFaculty(input: $input) {
+    _id
+  }
+}
+
+mutation UpdateFaculty($input: UpdateFacultyInput!) {
+  updateFaculty(input: $input) {
+    _id
+  }
+}

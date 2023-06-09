@@ -7,6 +7,7 @@ query Users($query: FindAllUsersInput!, $sort: UsersSortArgs) {
       _id
       displayName
       email
+      type
     }
   }
 }

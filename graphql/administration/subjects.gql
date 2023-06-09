@@ -1,0 +1,48 @@
+query Subjects($query: FindAllSubjectsInput!, $sort: SubjectsSortArgs) {
+  subjects(query: $query, sort: $sort) {
+    items {
+      _id
+      updatedAt
+      name
+      code
+      facultyId
+      faculty {
+        name
+        isActive
+      }
+      isActive
+    }
+    count
+    hasNextPage
+    hasPreviousPage
+    page
+  }
+}
+
+query Subject($query: FindOneSubjectInput!) {
+  subject(query: $query) {
+    _id
+    createdAt
+    updatedAt
+    name
+    faculty {
+      name
+      isActive
+    }
+    code
+    facultyId
+    isActive
+  }
+}
+
+mutation CreateSubject($input: CreateSubjectInput!) {
+  createSubject(input: $input) {
+    _id
+  }
+}
+
+mutation UpdateSubject($input: UpdateSubjectInput!) {
+  updateSubject(input: $input) {
+    _id
+  }
+}

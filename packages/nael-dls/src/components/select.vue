@@ -68,11 +68,13 @@ watch(() => focusEl.value, (data) => {
         >
           <span class="flex items-center">
             <NlAvatar
+              v-if="includeAvatar"
               :src="internalValue?.avatar"
+              class="mr-3"
               circle
               size="xs"
             />
-            <span class="ml-3 block truncate">{{ internalValue?.label ?? 'No Data Selected' }}</span>
+            <span class="block truncate">{{ internalValue?.label ?? 'No Data Selected' }}</span>
           </span>
           <span class="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
             <Icon
@@ -115,10 +117,11 @@ watch(() => focusEl.value, (data) => {
               :disabled="item.disabled"
             >
               <li
-                :class="[active ? !stateDisabled ?'text-white bg-primary-600' : 'text-white bg-gray-400' : !stateDisabled ? 'text-gray-900': 'text-gray-500', 'relative select-none py-2 pl-3 pr-9 cursor-pointer group']"
+                :class="[active ? !stateDisabled ?'text-white bg-primary-600' : 'text-white bg-gray-400' : !stateDisabled ? 'text-gray-900': 'text-gray-500', 'relative select-none py-3 pl-3 pr-9 cursor-pointer group']"
               >
                 <div class="flex items-center">
                   <NlAvatar
+                    v-if="includeAvatar"
                     :src="item.avatar"
                     circle
                     size="sm"

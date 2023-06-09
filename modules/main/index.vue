@@ -40,6 +40,7 @@ async function getGraphData() {
   });
 	if (inProgress.value === InteractionStatus.None) {
 		const graphData = await useCallMsGraph(response.accessToken);
+
     await onLogin(response.idToken)
 		state.data = graphData;
 		state.resolved = true;
