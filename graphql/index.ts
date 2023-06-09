@@ -66,6 +66,13 @@ export type CreateMessageInput = {
   text: Scalars['String'];
 };
 
+export type CreateSemesterInput = {
+  endDate: Scalars['DateTime'];
+  isActive?: InputMaybe<Scalars['Boolean']>;
+  name: Scalars['String'];
+  startDate: Scalars['DateTime'];
+};
+
 export type CreateSubjectInput = {
   code: Scalars['String'];
   facultyId: Scalars['ObjectId'];
@@ -125,6 +132,13 @@ export type FindAllMessagesInput = {
   userIds?: InputMaybe<Scalars['ObjectId']>;
 };
 
+export type FindAllSemestersInput = {
+  isActive?: InputMaybe<Scalars['Boolean']>;
+  limit?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+};
+
 export type FindAllSubjectsInput = {
   isActive?: InputMaybe<Scalars['Boolean']>;
   limit?: InputMaybe<Scalars['Int']>;
@@ -147,6 +161,12 @@ export type FindOneConversationInput = {
 export type FindOneFacultyInput = {
   _id?: InputMaybe<Scalars['ObjectId']>;
   slug?: InputMaybe<Scalars['String']>;
+};
+
+export type FindOneSemesterInput = {
+  _id?: InputMaybe<Scalars['ObjectId']>;
+  code?: InputMaybe<Scalars['String']>;
+  name?: InputMaybe<Scalars['String']>;
 };
 
 export type FindOneSubjectInput = {
@@ -198,10 +218,12 @@ export type Mutation = {
   createConversation: Conversation;
   createFaculty: Faculty;
   createMessage: Message;
+  createSemester: Semester;
   createSubject: Subject;
   createUser: User;
   loginWithPassword: LoginResult;
   updateFaculty: Faculty;
+  updateSemester: Semester;
   updateSubject: Subject;
 };
 
@@ -218,6 +240,11 @@ export type MutationCreateFacultyArgs = {
 
 export type MutationCreateMessageArgs = {
   input: CreateMessageInput;
+};
+
+
+export type MutationCreateSemesterArgs = {
+  input: CreateSemesterInput;
 };
 
 
@@ -238,6 +265,11 @@ export type MutationLoginWithPasswordArgs = {
 
 export type MutationUpdateFacultyArgs = {
   input: UpdateFacultyInput;
+};
+
+
+export type MutationUpdateSemesterArgs = {
+  input: UpdateSemesterInput;
 };
 
 
@@ -272,6 +304,15 @@ export type PaginatedMessage = {
   page: Scalars['Int'];
 };
 
+export type PaginatedSemesters = {
+  __typename?: 'PaginatedSemesters';
+  count: Scalars['Int'];
+  hasNextPage: Scalars['Boolean'];
+  hasPreviousPage: Scalars['Boolean'];
+  items: Array<Semester>;
+  page: Scalars['Int'];
+};
+
 export type PaginatedSubjects = {
   __typename?: 'PaginatedSubjects';
   count: Scalars['Int'];
@@ -298,6 +339,8 @@ export type Query = {
   faculties: PaginatedFaculties;
   faculty: Faculty;
   messages?: Maybe<PaginatedMessage>;
+  semester: Semester;
+  semesters: PaginatedSemesters;
   subject: Subject;
   subjects: PaginatedSubjects;
   user: User;
@@ -333,6 +376,17 @@ export type QueryMessagesArgs = {
 };
 
 
+export type QuerySemesterArgs = {
+  query: FindOneSemesterInput;
+};
+
+
+export type QuerySemestersArgs = {
+  query: FindAllSemestersInput;
+  sort?: InputMaybe<SemestersSortArgs>;
+};
+
+
 export type QuerySubjectArgs = {
   query: FindOneSubjectInput;
 };
@@ -352,6 +406,28 @@ export type QueryUserArgs = {
 export type QueryUsersArgs = {
   query: FindAllUsersInput;
   sort?: InputMaybe<UsersSortArgs>;
+};
+
+export type Semester = {
+  __typename?: 'Semester';
+  _id: Scalars['ObjectId'];
+  createdAt: Scalars['DateTime'];
+  createdBy: User;
+  createdById: Scalars['ObjectId'];
+  endDate: Scalars['DateTime'];
+  isActive: Scalars['Boolean'];
+  isDeleted: Scalars['Boolean'];
+  name: Scalars['String'];
+  startDate: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  updatedBy: User;
+  updatedById: Scalars['ObjectId'];
+};
+
+export type SemestersSortArgs = {
+  code?: InputMaybe<SortEnum>;
+  name?: InputMaybe<SortEnum>;
+  updatedAt?: InputMaybe<SortEnum>;
 };
 
 export enum SortEnum {
@@ -403,6 +479,14 @@ export type UpdateFacultyInput = {
   isActive?: InputMaybe<Scalars['Boolean']>;
   name?: InputMaybe<Scalars['String']>;
   slug?: InputMaybe<Scalars['String']>;
+};
+
+export type UpdateSemesterInput = {
+  _id: Scalars['ObjectId'];
+  endDate?: InputMaybe<Scalars['DateTime']>;
+  isActive?: InputMaybe<Scalars['Boolean']>;
+  name?: InputMaybe<Scalars['String']>;
+  startDate?: InputMaybe<Scalars['DateTime']>;
 };
 
 export type UpdateSubjectInput = {
@@ -479,6 +563,35 @@ export type UpdateFacultyMutationVariables = Exact<{
 
 
 export type UpdateFacultyMutation = { __typename?: 'Mutation', updateFaculty: { __typename?: 'Faculty', _id: any } };
+
+export type SemestersQueryVariables = Exact<{
+  query: FindAllSemestersInput;
+  sort?: InputMaybe<SemestersSortArgs>;
+}>;
+
+
+export type SemestersQuery = { __typename?: 'Query', semesters: { __typename?: 'PaginatedSemesters', count: number, hasNextPage: boolean, hasPreviousPage: boolean, page: number, items: Array<{ __typename?: 'Semester', _id: any, updatedAt: any, name: string, startDate: any, endDate: any, isActive: boolean }> } };
+
+export type SemesterQueryVariables = Exact<{
+  query: FindOneSemesterInput;
+}>;
+
+
+export type SemesterQuery = { __typename?: 'Query', semester: { __typename?: 'Semester', _id: any, createdAt: any, updatedAt: any, name: string, startDate: any, endDate: any, isActive: boolean } };
+
+export type CreateSemesterMutationVariables = Exact<{
+  input: CreateSemesterInput;
+}>;
+
+
+export type CreateSemesterMutation = { __typename?: 'Mutation', createSemester: { __typename?: 'Semester', _id: any } };
+
+export type UpdateSemesterMutationVariables = Exact<{
+  input: UpdateSemesterInput;
+}>;
+
+
+export type UpdateSemesterMutation = { __typename?: 'Mutation', updateSemester: { __typename?: 'Semester', _id: any } };
 
 export type SubjectsQueryVariables = Exact<{
   query: FindAllSubjectsInput;
@@ -707,6 +820,142 @@ export function useUpdateFacultyMutation(options: VueApolloComposable.UseMutatio
   return VueApolloComposable.useMutation<UpdateFacultyMutation, UpdateFacultyMutationVariables>(UpdateFacultyDocument, options);
 }
 export type UpdateFacultyMutationCompositionFunctionResult = VueApolloComposable.UseMutationReturn<UpdateFacultyMutation, UpdateFacultyMutationVariables>;
+export const SemestersDocument = gql`
+    query Semesters($query: FindAllSemestersInput!, $sort: SemestersSortArgs) {
+  semesters(query: $query, sort: $sort) {
+    items {
+      _id
+      updatedAt
+      name
+      startDate
+      endDate
+      isActive
+    }
+    count
+    hasNextPage
+    hasPreviousPage
+    page
+  }
+}
+    `;
+
+/**
+ * __useSemestersQuery__
+ *
+ * To run a query within a Vue component, call `useSemestersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSemestersQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * you can use to render your UI.
+ *
+ * @param variables that will be passed into the query
+ * @param options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
+ *
+ * @example
+ * const { result, loading, error } = useSemestersQuery({
+ *   query: // value for 'query'
+ *   sort: // value for 'sort'
+ * });
+ */
+export function useSemestersQuery(variables: SemestersQueryVariables | VueCompositionApi.Ref<SemestersQueryVariables> | ReactiveFunction<SemestersQueryVariables>, options: VueApolloComposable.UseQueryOptions<SemestersQuery, SemestersQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<SemestersQuery, SemestersQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<SemestersQuery, SemestersQueryVariables>> = {}) {
+  return VueApolloComposable.useQuery<SemestersQuery, SemestersQueryVariables>(SemestersDocument, variables, options);
+}
+export function useSemestersLazyQuery(variables: SemestersQueryVariables | VueCompositionApi.Ref<SemestersQueryVariables> | ReactiveFunction<SemestersQueryVariables>, options: VueApolloComposable.UseQueryOptions<SemestersQuery, SemestersQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<SemestersQuery, SemestersQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<SemestersQuery, SemestersQueryVariables>> = {}) {
+  return VueApolloComposable.useLazyQuery<SemestersQuery, SemestersQueryVariables>(SemestersDocument, variables, options);
+}
+export type SemestersQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<SemestersQuery, SemestersQueryVariables>;
+export const SemesterDocument = gql`
+    query Semester($query: FindOneSemesterInput!) {
+  semester(query: $query) {
+    _id
+    createdAt
+    updatedAt
+    name
+    startDate
+    endDate
+    isActive
+  }
+}
+    `;
+
+/**
+ * __useSemesterQuery__
+ *
+ * To run a query within a Vue component, call `useSemesterQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSemesterQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * you can use to render your UI.
+ *
+ * @param variables that will be passed into the query
+ * @param options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
+ *
+ * @example
+ * const { result, loading, error } = useSemesterQuery({
+ *   query: // value for 'query'
+ * });
+ */
+export function useSemesterQuery(variables: SemesterQueryVariables | VueCompositionApi.Ref<SemesterQueryVariables> | ReactiveFunction<SemesterQueryVariables>, options: VueApolloComposable.UseQueryOptions<SemesterQuery, SemesterQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<SemesterQuery, SemesterQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<SemesterQuery, SemesterQueryVariables>> = {}) {
+  return VueApolloComposable.useQuery<SemesterQuery, SemesterQueryVariables>(SemesterDocument, variables, options);
+}
+export function useSemesterLazyQuery(variables: SemesterQueryVariables | VueCompositionApi.Ref<SemesterQueryVariables> | ReactiveFunction<SemesterQueryVariables>, options: VueApolloComposable.UseQueryOptions<SemesterQuery, SemesterQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<SemesterQuery, SemesterQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<SemesterQuery, SemesterQueryVariables>> = {}) {
+  return VueApolloComposable.useLazyQuery<SemesterQuery, SemesterQueryVariables>(SemesterDocument, variables, options);
+}
+export type SemesterQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<SemesterQuery, SemesterQueryVariables>;
+export const CreateSemesterDocument = gql`
+    mutation CreateSemester($input: CreateSemesterInput!) {
+  createSemester(input: $input) {
+    _id
+  }
+}
+    `;
+
+/**
+ * __useCreateSemesterMutation__
+ *
+ * To run a mutation, you first call `useCreateSemesterMutation` within a Vue component and pass it any options that fit your needs.
+ * When your component renders, `useCreateSemesterMutation` returns an object that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - Several other properties: https://v4.apollo.vuejs.org/api/use-mutation.html#return
+ *
+ * @param options that will be passed into the mutation, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/mutation.html#options;
+ *
+ * @example
+ * const { mutate, loading, error, onDone } = useCreateSemesterMutation({
+ *   variables: {
+ *     input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateSemesterMutation(options: VueApolloComposable.UseMutationOptions<CreateSemesterMutation, CreateSemesterMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<CreateSemesterMutation, CreateSemesterMutationVariables>> = {}) {
+  return VueApolloComposable.useMutation<CreateSemesterMutation, CreateSemesterMutationVariables>(CreateSemesterDocument, options);
+}
+export type CreateSemesterMutationCompositionFunctionResult = VueApolloComposable.UseMutationReturn<CreateSemesterMutation, CreateSemesterMutationVariables>;
+export const UpdateSemesterDocument = gql`
+    mutation UpdateSemester($input: UpdateSemesterInput!) {
+  updateSemester(input: $input) {
+    _id
+  }
+}
+    `;
+
+/**
+ * __useUpdateSemesterMutation__
+ *
+ * To run a mutation, you first call `useUpdateSemesterMutation` within a Vue component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateSemesterMutation` returns an object that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - Several other properties: https://v4.apollo.vuejs.org/api/use-mutation.html#return
+ *
+ * @param options that will be passed into the mutation, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/mutation.html#options;
+ *
+ * @example
+ * const { mutate, loading, error, onDone } = useUpdateSemesterMutation({
+ *   variables: {
+ *     input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateSemesterMutation(options: VueApolloComposable.UseMutationOptions<UpdateSemesterMutation, UpdateSemesterMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<UpdateSemesterMutation, UpdateSemesterMutationVariables>> = {}) {
+  return VueApolloComposable.useMutation<UpdateSemesterMutation, UpdateSemesterMutationVariables>(UpdateSemesterDocument, options);
+}
+export type UpdateSemesterMutationCompositionFunctionResult = VueApolloComposable.UseMutationReturn<UpdateSemesterMutation, UpdateSemesterMutationVariables>;
 export const SubjectsDocument = gql`
     query Subjects($query: FindAllSubjectsInput!, $sort: SubjectsSortArgs) {
   subjects(query: $query, sort: $sort) {

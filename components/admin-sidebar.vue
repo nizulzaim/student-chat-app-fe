@@ -13,6 +13,10 @@ const menuLists = ref<MenuItem[]>([{
   _id: "/administration/subjects",
   name: "Manage Subjects",
   icon: "gridicons:book"
+}, {
+  _id: "/administration/semesters",
+  name: "Manage Semesters",
+  icon: "gridicons:book"
 }])
 </script>
 
@@ -31,7 +35,7 @@ const menuLists = ref<MenuItem[]>([{
       >
         <Icon
           :name="list.icon"
-          class="w-6 h-6"
+          class="w-6 h-6 text-accent-800"
         />
         <div class="flex flex-grow items-center justify-between">
           <div class="min-w-0">

@@ -1,0 +1,40 @@
+query Semesters($query: FindAllSemestersInput!, $sort: SemestersSortArgs) {
+  semesters(query: $query, sort: $sort) {
+    items {
+      _id
+      updatedAt
+      name
+      startDate
+      endDate
+      isActive
+    }
+    count
+    hasNextPage
+    hasPreviousPage
+    page
+  }
+}
+
+query Semester($query: FindOneSemesterInput!) {
+  semester(query: $query) {
+    _id
+    createdAt
+    updatedAt
+    name
+    startDate
+    endDate
+    isActive
+  }
+}
+
+mutation CreateSemester($input: CreateSemesterInput!) {
+  createSemester(input: $input) {
+    _id
+  }
+}
+
+mutation UpdateSemester($input: UpdateSemesterInput!) {
+  updateSemester(input: $input) {
+    _id
+  }
+}
