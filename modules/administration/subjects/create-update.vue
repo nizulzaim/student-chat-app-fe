@@ -4,21 +4,16 @@ import { useSharedVariable } from '.';
 import { nanoid } from 'nanoid'
 import { SelectInput } from '@nael/dls/src/types/select-input';
 import { UpdateSubjectInput, useCreateSubjectMutation, useFacultiesQuery, useSubjectQuery, useUpdateSubjectMutation } from '~~/graphql';
-import { RangeDate } from '~~/packages/nael-dls/src/types/range-date';
-import { addWeeks, startOfWeek } from 'date-fns';
 const { createUpdateState, isCreate, query, subjectsRefecth } = useSharedVariable()
 const { mutate: createSubject } = useCreateSubjectMutation({ update: () => subjectsRefecth() })
 const { mutate: updateSubject } = useUpdateSubjectMutation({ update: () => subjectsRefecth() })
 const { result: subjectResult } = useSubjectQuery({ query: query })
 const {result: facultiesResult} = useFacultiesQuery({query: {}});
 
-const startDate = startOfWeek(new Date(), { weekStartsOn: 0 })
-const endDate = addWeeks(startDate, 19)
 const { transform } = useObjectTransform()
 const loading = useComponentMutationLoading()
 const formId = nanoid()
 const selectedFaculty = ref<SelectInput>()
-const datePicker = ref<RangeDate>([startDate, endDate])
 
 const defaultValue: {
   name: string,
@@ -111,11 +106,6 @@ const facultiesDropdown = computed<SelectInput[]>(() => {
           label="Faculty"
           required
           :include-avatar="false"
-        />
-        <NlDatepicker
-          v-model="datePicker"
-          label="Hello World"
-          class="mb-6"
         />
         <NlSwitch
           v-model="input.isActive"
