@@ -148,7 +148,7 @@ watch(() => user.value, () => {
           >
             <RouterLink
               :to="item.href"
-              :class="[item.current ? 'bg-gray-800 text-white' : 'text-gray-200 hover:text-white hover:bg-gray-800', 'group flex gap-x-3 rounded-md p-3 text-sm leading-6 font-semibold']"
+              class="text-gray-200 hover:text-white hover:bg-gray-800', 'group flex gap-x-3 rounded-md p-3 text-sm leading-6 font-semibold"
             >
               <Icon
                 :name="item.icon"
@@ -266,9 +266,15 @@ watch(() => user.value, () => {
     </div>
 
     <aside
-      class="fixed bottom-0 left-20 top-16 hidden w-96 overflow-y-auto border-r border-gray-200 xl:block"
+      class="fixed bottom-0 left-20 top-16 hidden w-96 overflow-y-auto border-r border-gray-200 xl:block z-10 shadow-lg shadow-gray-400/20"
     >
       <slot name="sidebar" />
     </aside>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.router-link-active {
+  @apply bg-accent-800/40 text-white;
+}
+</style>
