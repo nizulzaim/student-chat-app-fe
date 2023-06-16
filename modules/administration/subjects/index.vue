@@ -4,10 +4,11 @@ import { useSharedVariable } from '.';
 import { useDateFormat } from '@vueuse/core'
 const searchText = ref('')
 const { createUpdateState, subjects, subjectsLoading: loading, updateSearch, subjectsResult, defaultQuery, query } = useSharedVariable()
+const router = useRouter()
 
 const showDetails = (id: string) => {
   query._id = id
-  createUpdateState.value = true
+  router.push(`/administration/subjects/${id}`)
 }
 </script>
 
