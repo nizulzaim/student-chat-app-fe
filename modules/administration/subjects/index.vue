@@ -3,12 +3,11 @@ import CreateUpdate from './create-update.vue'
 import { useSharedVariable } from '.';
 import { useDateFormat } from '@vueuse/core'
 const searchText = ref('')
-const { createUpdateState, subjects, subjectsLoading: loading, updateSearch, subjectsResult, defaultQuery, query } = useSharedVariable()
+const { createUpdateState, subjects, subjectsLoading: loading, updateSearch, subjectsResult, defaultQuery } = useSharedVariable()
 const router = useRouter()
 
 const showDetails = (id: string) => {
-  query._id = id
-  router.push(`/administration/subjects/${id}`)
+  return router.push(`/administration/subjects/${id}`)
 }
 </script>
 

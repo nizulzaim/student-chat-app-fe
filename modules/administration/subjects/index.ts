@@ -1,5 +1,5 @@
 import { createSharedComposable } from '@vueuse/core'
-import { useSubjectsQuery } from '~~/graphql'
+import { useSubjectQuery, useSubjectsQuery } from '~~/graphql'
 
 export const useSharedVariable = createSharedComposable(() => {
   const defaultQuery = reactive({
@@ -8,16 +8,14 @@ export const useSharedVariable = createSharedComposable(() => {
     page: 1,
   })
 
-  const query = reactive<{ _id: string }>({ _id: '' })
-
   const updateSearch = (search: string) => {
     defaultQuery.search = search
   }
 
-  const { result: subjectsResult, loading: subjectsLoading, refetch: subjectsRefecth } = useSubjectsQuery({ query: defaultQuery }, { fetchPolicy: 'network-only' })
+  const { result: subjectsResult, loading: subjectsLoading, refetch: subjectsRefetch } = useSubjectsQuery({ query: defaultQuery }, { fetchPolicy: 'network-only' })
   const createUpdateState = ref(false)
+  const addAttachmentState = ref(false)
   const subjects = computed(() => subjectsResult.value?.subjects.items ?? [])
-  const isCreate = computed(() => !query._id)
 
   return {
     subjects,
@@ -26,8 +24,7 @@ export const useSharedVariable = createSharedComposable(() => {
     createUpdateState,
     updateSearch,
     defaultQuery,
-    query,
-    isCreate,
-    subjectsRefecth
+    subjectsRefetch,
+    addAttachmentState,
   }
 })

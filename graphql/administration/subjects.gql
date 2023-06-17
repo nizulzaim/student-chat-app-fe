@@ -29,6 +29,20 @@ query Subject($query: FindOneSubjectInput!) {
       name
       isActive
     }
+    weekAttachments {
+      attachmentId
+      name
+      week
+      createdAt
+      attachmentInfo {
+        size
+        mimeType
+        filename
+        createdBy {
+          displayName
+        }
+      }
+    }
     code
     facultyId
     isActive
@@ -43,6 +57,12 @@ mutation CreateSubject($input: CreateSubjectInput!) {
 
 mutation UpdateSubject($input: UpdateSubjectInput!) {
   updateSubject(input: $input) {
+    _id
+  }
+}
+
+mutation UpdateSubjectAddDocument($input: UpdateSubjectAddDocument!) {
+  updateSubjectAddDocument(input: $input) {
     _id
   }
 }

@@ -3,11 +3,10 @@
 import { useSharedVariable } from '.';
 import { nanoid } from 'nanoid'
 import { SelectInput } from '@nael/dls/src/types/select-input';
-import { UpdateSubjectInput, useCreateSubjectMutation, useFacultiesQuery, useSubjectQuery, useUpdateSubjectMutation } from '~~/graphql';
-const { createUpdateState, isCreate, query, subjectsRefecth } = useSharedVariable()
-const { mutate: createSubject } = useCreateSubjectMutation({ update: () => subjectsRefecth() })
-const { mutate: updateSubject } = useUpdateSubjectMutation({ update: () => subjectsRefecth() })
-const { result: subjectResult } = useSubjectQuery({ query: query })
+import { UpdateSubjectInput, useCreateSubjectMutation, useFacultiesQuery, useUpdateSubjectMutation } from '~~/graphql';
+const { createUpdateState, subjectsRefetch } = useSharedVariable()
+const { mutate: createSubject } = useCreateSubjectMutation({ update: () => subjectsRefetch() })
+const { mutate: updateSubject } = useUpdateSubjectMutation({ update: () => subjectsRefetch() })
 const {result: facultiesResult} = useFacultiesQuery({query: {}});
 
 const { transform } = useObjectTransform()
@@ -29,40 +28,18 @@ const input = ref({ ...defaultValue })
 
 const close = () => {
   createUpdateState.value = false
-  query._id = ""
   input.value = { ...defaultValue }
 }
 
 const modalText = computed(() => {
   return {
-    title: isCreate.value ? 'Register Subject' : 'Update Subject'
+    title: 'Register Subject',
   }
 })
 
-watch(() => subjectResult.value, (val) => {
-  if (val?.subject) {
-    input.value = { ...val.subject }
-    selectedFaculty.value = {
-      value: val.subject.facultyId,
-      label: val.subject.faculty.name,
-      disabled: !val.subject.faculty.isActive
-    }
-  }
-})
 
 const submit = async () => {
-  if (isCreate.value) {
-    await createSubject({ input: { ...input.value, facultyId: selectedFaculty.value?.value } })
-  } else {
-    if (!query._id) return;
-    await updateSubject({
-      input: {
-        ...transform<UpdateSubjectInput>(input.value, ['name', 'isActive', 'code']),
-        facultyId: selectedFaculty.value?.value,
-        _id: query._id
-      }
-    })
-  }
+  await createSubject({ input: { ...input.value, facultyId: selectedFaculty.value?.value } })
   close()
 }
 
@@ -127,7 +104,7 @@ const facultiesDropdown = computed<SelectInput[]>(() => {
           :form="formId"
           :disabled="loading"
         >
-          {{ isCreate? 'Create': 'Update' }}
+          Create
         </NlButton>
       </div>
     </template>

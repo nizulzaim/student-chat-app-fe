@@ -102,6 +102,7 @@ export default () => {
           authorization: cookie.value
             ? `Bearer ${cookie.value}`
             : '',
+          'Apollo-Require-Preflight': 'true'
         },
       }
     } catch (err) {
@@ -151,7 +152,7 @@ export default () => {
       cache,
       defaultOptions: {
         watchQuery: {
-          fetchPolicy: 'cache-and-network',
+          fetchPolicy: 'network-only',
         },
         query: {
           fetchPolicy: 'network-only',

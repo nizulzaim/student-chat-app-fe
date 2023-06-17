@@ -1,0 +1,19 @@
+mutation UploadAttachment($file: Upload!) {
+  uploadAttachment(file: $file) {
+    _id
+    createdAt
+    filename
+    isActive
+    key
+    mimeType
+    size
+    updatedAt
+  }
+}
+query GetSignedAttachmentUrl($id: String) {
+  getSignedAttachmentUrl(id: $id)
+}
+
+mutation DownloadSignedAttachmentUrl($id: String) {
+  downloadSignedAttachmentUrl(id: $id)
+}

@@ -16,6 +16,25 @@ export type Scalars = {
   Float: number;
   DateTime: any;
   ObjectId: any;
+  Upload: any;
+};
+
+export type Attachment = {
+  __typename?: 'Attachment';
+  _id: Scalars['ObjectId'];
+  createdAt: Scalars['DateTime'];
+  createdBy: User;
+  createdById: Scalars['ObjectId'];
+  filename: Scalars['String'];
+  isActive: Scalars['Boolean'];
+  isDeleted: Scalars['Boolean'];
+  isPublic: Scalars['Boolean'];
+  key: Scalars['String'];
+  mimeType: Scalars['String'];
+  size: Scalars['Float'];
+  updatedAt: Scalars['DateTime'];
+  updatedBy: User;
+  updatedById: Scalars['ObjectId'];
 };
 
 export type Conversation = {
@@ -221,10 +240,13 @@ export type Mutation = {
   createSemester: Semester;
   createSubject: Subject;
   createUser: User;
+  downloadSignedAttachmentUrl?: Maybe<Scalars['String']>;
   loginWithPassword: LoginResult;
   updateFaculty: Faculty;
   updateSemester: Semester;
   updateSubject: Subject;
+  updateSubjectAddDocument: Subject;
+  uploadAttachment: Attachment;
 };
 
 
@@ -258,6 +280,11 @@ export type MutationCreateUserArgs = {
 };
 
 
+export type MutationDownloadSignedAttachmentUrlArgs = {
+  id?: InputMaybe<Scalars['String']>;
+};
+
+
 export type MutationLoginWithPasswordArgs = {
   input: LoginWithPasswordInput;
 };
@@ -275,6 +302,16 @@ export type MutationUpdateSemesterArgs = {
 
 export type MutationUpdateSubjectArgs = {
   input: UpdateSubjectInput;
+};
+
+
+export type MutationUpdateSubjectAddDocumentArgs = {
+  input: UpdateSubjectAddDocument;
+};
+
+
+export type MutationUploadAttachmentArgs = {
+  file: Scalars['Upload'];
 };
 
 export type PaginatedConversation = {
@@ -338,10 +375,11 @@ export type Query = {
   currentUser: User;
   faculties: PaginatedFaculties;
   faculty: Faculty;
+  getSignedAttachmentUrl?: Maybe<Scalars['String']>;
   messages?: Maybe<PaginatedMessage>;
   semester: Semester;
   semesters: PaginatedSemesters;
-  subject: Subject;
+  subject?: Maybe<Subject>;
   subjects: PaginatedSubjects;
   user: User;
   users: PaginatedUsers;
@@ -367,6 +405,11 @@ export type QueryFacultiesArgs = {
 
 export type QueryFacultyArgs = {
   query: FindOneFacultyInput;
+};
+
+
+export type QueryGetSignedAttachmentUrlArgs = {
+  id?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -450,6 +493,7 @@ export type Subject = {
   updatedAt: Scalars['DateTime'];
   updatedBy: User;
   updatedById: Scalars['ObjectId'];
+  weekAttachments?: Maybe<Array<WeekDocument>>;
 };
 
 export type SubjectsSortArgs = {
@@ -487,6 +531,13 @@ export type UpdateSemesterInput = {
   isActive?: InputMaybe<Scalars['Boolean']>;
   name?: InputMaybe<Scalars['String']>;
   startDate?: InputMaybe<Scalars['DateTime']>;
+};
+
+export type UpdateSubjectAddDocument = {
+  _id: Scalars['ObjectId'];
+  attachmentId: Scalars['ObjectId'];
+  name: Scalars['String'];
+  week: Scalars['Int'];
 };
 
 export type UpdateSubjectInput = {
@@ -533,6 +584,17 @@ export type UsersSortArgs = {
   firstName?: InputMaybe<SortEnum>;
   lastName?: InputMaybe<SortEnum>;
   updatedAt?: InputMaybe<SortEnum>;
+};
+
+export type WeekDocument = {
+  __typename?: 'WeekDocument';
+  attachmentId: Scalars['ObjectId'];
+  attachmentInfo: Attachment;
+  createdAt: Scalars['DateTime'];
+  createdBy: User;
+  name: Scalars['String'];
+  updatedBy: User;
+  week: Scalars['Int'];
 };
 
 export type FacultiesQueryVariables = Exact<{
@@ -606,7 +668,7 @@ export type SubjectQueryVariables = Exact<{
 }>;
 
 
-export type SubjectQuery = { __typename?: 'Query', subject: { __typename?: 'Subject', _id: any, createdAt: any, updatedAt: any, name: string, code: string, facultyId: any, isActive: boolean, faculty: { __typename?: 'Faculty', name: string, isActive: boolean } } };
+export type SubjectQuery = { __typename?: 'Query', subject?: { __typename?: 'Subject', _id: any, createdAt: any, updatedAt: any, name: string, code: string, facultyId: any, isActive: boolean, faculty: { __typename?: 'Faculty', name: string, isActive: boolean }, weekAttachments?: Array<{ __typename?: 'WeekDocument', attachmentId: any, name: string, week: number, createdAt: any, attachmentInfo: { __typename?: 'Attachment', size: number, mimeType: string, filename: string, createdBy: { __typename?: 'User', displayName: string } } }> | null } | null };
 
 export type CreateSubjectMutationVariables = Exact<{
   input: CreateSubjectInput;
@@ -621,6 +683,34 @@ export type UpdateSubjectMutationVariables = Exact<{
 
 
 export type UpdateSubjectMutation = { __typename?: 'Mutation', updateSubject: { __typename?: 'Subject', _id: any } };
+
+export type UpdateSubjectAddDocumentMutationVariables = Exact<{
+  input: UpdateSubjectAddDocument;
+}>;
+
+
+export type UpdateSubjectAddDocumentMutation = { __typename?: 'Mutation', updateSubjectAddDocument: { __typename?: 'Subject', _id: any } };
+
+export type UploadAttachmentMutationVariables = Exact<{
+  file: Scalars['Upload'];
+}>;
+
+
+export type UploadAttachmentMutation = { __typename?: 'Mutation', uploadAttachment: { __typename?: 'Attachment', _id: any, createdAt: any, filename: string, isActive: boolean, key: string, mimeType: string, size: number, updatedAt: any } };
+
+export type GetSignedAttachmentUrlQueryVariables = Exact<{
+  id?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type GetSignedAttachmentUrlQuery = { __typename?: 'Query', getSignedAttachmentUrl?: string | null };
+
+export type DownloadSignedAttachmentUrlMutationVariables = Exact<{
+  id?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type DownloadSignedAttachmentUrlMutation = { __typename?: 'Mutation', downloadSignedAttachmentUrl?: string | null };
 
 export type LoginWithPasswordMutationVariables = Exact<{
   input: LoginWithPasswordInput;
@@ -1013,6 +1103,20 @@ export const SubjectDocument = gql`
       name
       isActive
     }
+    weekAttachments {
+      attachmentId
+      name
+      week
+      createdAt
+      attachmentInfo {
+        size
+        mimeType
+        filename
+        createdBy {
+          displayName
+        }
+      }
+    }
     code
     facultyId
     isActive
@@ -1100,6 +1204,126 @@ export function useUpdateSubjectMutation(options: VueApolloComposable.UseMutatio
   return VueApolloComposable.useMutation<UpdateSubjectMutation, UpdateSubjectMutationVariables>(UpdateSubjectDocument, options);
 }
 export type UpdateSubjectMutationCompositionFunctionResult = VueApolloComposable.UseMutationReturn<UpdateSubjectMutation, UpdateSubjectMutationVariables>;
+export const UpdateSubjectAddDocumentDocument = gql`
+    mutation UpdateSubjectAddDocument($input: UpdateSubjectAddDocument!) {
+  updateSubjectAddDocument(input: $input) {
+    _id
+  }
+}
+    `;
+
+/**
+ * __useUpdateSubjectAddDocumentMutation__
+ *
+ * To run a mutation, you first call `useUpdateSubjectAddDocumentMutation` within a Vue component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateSubjectAddDocumentMutation` returns an object that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - Several other properties: https://v4.apollo.vuejs.org/api/use-mutation.html#return
+ *
+ * @param options that will be passed into the mutation, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/mutation.html#options;
+ *
+ * @example
+ * const { mutate, loading, error, onDone } = useUpdateSubjectAddDocumentMutation({
+ *   variables: {
+ *     input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateSubjectAddDocumentMutation(options: VueApolloComposable.UseMutationOptions<UpdateSubjectAddDocumentMutation, UpdateSubjectAddDocumentMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<UpdateSubjectAddDocumentMutation, UpdateSubjectAddDocumentMutationVariables>> = {}) {
+  return VueApolloComposable.useMutation<UpdateSubjectAddDocumentMutation, UpdateSubjectAddDocumentMutationVariables>(UpdateSubjectAddDocumentDocument, options);
+}
+export type UpdateSubjectAddDocumentMutationCompositionFunctionResult = VueApolloComposable.UseMutationReturn<UpdateSubjectAddDocumentMutation, UpdateSubjectAddDocumentMutationVariables>;
+export const UploadAttachmentDocument = gql`
+    mutation UploadAttachment($file: Upload!) {
+  uploadAttachment(file: $file) {
+    _id
+    createdAt
+    filename
+    isActive
+    key
+    mimeType
+    size
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useUploadAttachmentMutation__
+ *
+ * To run a mutation, you first call `useUploadAttachmentMutation` within a Vue component and pass it any options that fit your needs.
+ * When your component renders, `useUploadAttachmentMutation` returns an object that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - Several other properties: https://v4.apollo.vuejs.org/api/use-mutation.html#return
+ *
+ * @param options that will be passed into the mutation, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/mutation.html#options;
+ *
+ * @example
+ * const { mutate, loading, error, onDone } = useUploadAttachmentMutation({
+ *   variables: {
+ *     file: // value for 'file'
+ *   },
+ * });
+ */
+export function useUploadAttachmentMutation(options: VueApolloComposable.UseMutationOptions<UploadAttachmentMutation, UploadAttachmentMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<UploadAttachmentMutation, UploadAttachmentMutationVariables>> = {}) {
+  return VueApolloComposable.useMutation<UploadAttachmentMutation, UploadAttachmentMutationVariables>(UploadAttachmentDocument, options);
+}
+export type UploadAttachmentMutationCompositionFunctionResult = VueApolloComposable.UseMutationReturn<UploadAttachmentMutation, UploadAttachmentMutationVariables>;
+export const GetSignedAttachmentUrlDocument = gql`
+    query GetSignedAttachmentUrl($id: String) {
+  getSignedAttachmentUrl(id: $id)
+}
+    `;
+
+/**
+ * __useGetSignedAttachmentUrlQuery__
+ *
+ * To run a query within a Vue component, call `useGetSignedAttachmentUrlQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSignedAttachmentUrlQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * you can use to render your UI.
+ *
+ * @param variables that will be passed into the query
+ * @param options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
+ *
+ * @example
+ * const { result, loading, error } = useGetSignedAttachmentUrlQuery({
+ *   id: // value for 'id'
+ * });
+ */
+export function useGetSignedAttachmentUrlQuery(variables: GetSignedAttachmentUrlQueryVariables | VueCompositionApi.Ref<GetSignedAttachmentUrlQueryVariables> | ReactiveFunction<GetSignedAttachmentUrlQueryVariables> = {}, options: VueApolloComposable.UseQueryOptions<GetSignedAttachmentUrlQuery, GetSignedAttachmentUrlQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetSignedAttachmentUrlQuery, GetSignedAttachmentUrlQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetSignedAttachmentUrlQuery, GetSignedAttachmentUrlQueryVariables>> = {}) {
+  return VueApolloComposable.useQuery<GetSignedAttachmentUrlQuery, GetSignedAttachmentUrlQueryVariables>(GetSignedAttachmentUrlDocument, variables, options);
+}
+export function useGetSignedAttachmentUrlLazyQuery(variables: GetSignedAttachmentUrlQueryVariables | VueCompositionApi.Ref<GetSignedAttachmentUrlQueryVariables> | ReactiveFunction<GetSignedAttachmentUrlQueryVariables> = {}, options: VueApolloComposable.UseQueryOptions<GetSignedAttachmentUrlQuery, GetSignedAttachmentUrlQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetSignedAttachmentUrlQuery, GetSignedAttachmentUrlQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetSignedAttachmentUrlQuery, GetSignedAttachmentUrlQueryVariables>> = {}) {
+  return VueApolloComposable.useLazyQuery<GetSignedAttachmentUrlQuery, GetSignedAttachmentUrlQueryVariables>(GetSignedAttachmentUrlDocument, variables, options);
+}
+export type GetSignedAttachmentUrlQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<GetSignedAttachmentUrlQuery, GetSignedAttachmentUrlQueryVariables>;
+export const DownloadSignedAttachmentUrlDocument = gql`
+    mutation DownloadSignedAttachmentUrl($id: String) {
+  downloadSignedAttachmentUrl(id: $id)
+}
+    `;
+
+/**
+ * __useDownloadSignedAttachmentUrlMutation__
+ *
+ * To run a mutation, you first call `useDownloadSignedAttachmentUrlMutation` within a Vue component and pass it any options that fit your needs.
+ * When your component renders, `useDownloadSignedAttachmentUrlMutation` returns an object that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - Several other properties: https://v4.apollo.vuejs.org/api/use-mutation.html#return
+ *
+ * @param options that will be passed into the mutation, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/mutation.html#options;
+ *
+ * @example
+ * const { mutate, loading, error, onDone } = useDownloadSignedAttachmentUrlMutation({
+ *   variables: {
+ *     id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDownloadSignedAttachmentUrlMutation(options: VueApolloComposable.UseMutationOptions<DownloadSignedAttachmentUrlMutation, DownloadSignedAttachmentUrlMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<DownloadSignedAttachmentUrlMutation, DownloadSignedAttachmentUrlMutationVariables>> = {}) {
+  return VueApolloComposable.useMutation<DownloadSignedAttachmentUrlMutation, DownloadSignedAttachmentUrlMutationVariables>(DownloadSignedAttachmentUrlDocument, options);
+}
+export type DownloadSignedAttachmentUrlMutationCompositionFunctionResult = VueApolloComposable.UseMutationReturn<DownloadSignedAttachmentUrlMutation, DownloadSignedAttachmentUrlMutationVariables>;
 export const LoginWithPasswordDocument = gql`
     mutation LoginWithPassword($input: LoginWithPasswordInput!) {
   loginWithPassword(input: $input) {

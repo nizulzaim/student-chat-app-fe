@@ -25,4 +25,7 @@ declare module "@nael/dls" {
   export * from "@nael/dls/src/main";
 }
 
+declare module 'filepond-plugin-pdf-preview';
+declare module 'filepond-plugin-pdf-preview';
+
 export { }
