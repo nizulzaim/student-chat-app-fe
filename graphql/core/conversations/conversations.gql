@@ -8,7 +8,38 @@ query Conversations($input: FindAllConversationsInput!, $sort: ConversationsSort
       }
       _id
       type
+      name
       numberOfUnread
     }
+  }
+}
+
+query Conversation($input: FindOneConversationInput!) {
+  conversation(input: $input) {
+    name
+    users {
+      _id
+      email
+      displayName
+    }
+    semesterClass {
+      lecturer {
+        displayName
+        email
+      }
+      subject {
+        name
+        weekAttachments {
+          attachmentId
+          week
+          name
+          attachmentInfo {
+            filename
+            size
+          }
+        }
+      }
+    }
+    type
   }
 }

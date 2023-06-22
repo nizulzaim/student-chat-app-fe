@@ -3,13 +3,11 @@
 import { useSharedVariable } from '.';
 import { nanoid } from 'nanoid'
 import { SelectInput } from '@nael/dls/src/types/select-input';
-import { UpdateSubjectInput, useCreateSubjectMutation, useFacultiesQuery, useUpdateSubjectMutation } from '~~/graphql';
+import { useCreateSubjectMutation, useFacultiesQuery, useUpdateSubjectMutation } from '~~/graphql';
 const { createUpdateState, subjectsRefetch } = useSharedVariable()
 const { mutate: createSubject } = useCreateSubjectMutation({ update: () => subjectsRefetch() })
-const { mutate: updateSubject } = useUpdateSubjectMutation({ update: () => subjectsRefetch() })
 const {result: facultiesResult} = useFacultiesQuery({query: {}});
 
-const { transform } = useObjectTransform()
 const loading = useComponentMutationLoading()
 const formId = nanoid()
 const selectedFaculty = ref<SelectInput>()

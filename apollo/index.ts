@@ -152,7 +152,7 @@ export default () => {
       cache,
       defaultOptions: {
         watchQuery: {
-          fetchPolicy: 'network-only',
+          fetchPolicy: 'cache-and-network',
         },
         query: {
           fetchPolicy: 'network-only',

@@ -5,4 +5,7 @@
     "source.fixAll.eslint": true
   },
   "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
+  "[vue]": {
+    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+  },
 }

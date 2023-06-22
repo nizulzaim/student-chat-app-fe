@@ -1,7 +1,8 @@
 
 <script setup lang="ts">
-import { useCreateMessageMutation, useMessagesQuery, useMessageAddedSubscription } from '~~/graphql';
+import { useCreateMessageMutation, useMessagesQuery, useMessageAddedSubscription, useConversationQuery, ConversationType } from '~~/graphql';
 import { useTimeAgo } from '@vueuse/core'
+import ViewDocumentsModal from '~~/modules/conversation/view-documents.vue'
 
 definePageMeta({
   layout: 'dashboard',
@@ -10,6 +11,7 @@ definePageMeta({
 const route = useRoute()
 const { user } = useCurrentUser()
 const { result, refetch } = useMessagesQuery({ input: { conversationId: route.params.id as string, limit: 100 }, sort: {} })
+const { result: conversationResult } = useConversationQuery({ input: { _id: route.params.id } })
 const { mutate } = useCreateMessageMutation({ update: () => refetch() })
 const $chatbox = ref()
 type MessageList = {
@@ -18,18 +20,21 @@ type MessageList = {
   createdAt: Date
   formatedCreatedAt: globalThis.ComputedRef<string>
   createdById: string
+  createdBy: string
   conversationId: string
 }
 const messageLists = ref<MessageList[]>([])
 const input = ref('')
+const viewDocumentModalState = ref(false)
 
-const updateMessageLists = ({smooth = true}: {smooth?: boolean}) => {
+const updateMessageLists = ({ smooth = true }: { smooth?: boolean }) => {
   messageLists.value = result.value?.messages?.items?.map(i => {
     return {
       _id: i._id,
       content: i.text,
       createdAt: i.createdAt,
       createdById: i.createdById,
+      createdBy: i.createdBy.displayName,
       conversationId: i.conversationId,
       formatedCreatedAt: useTimeAgo(i.createdAt).value
     }
@@ -40,10 +45,10 @@ const updateMessageLists = ({smooth = true}: {smooth?: boolean}) => {
 }
 
 watch(() => result.value, (value) => {
-  updateMessageLists({smooth: false})
+  updateMessageLists({ smooth: false })
 })
 
-updateMessageLists({smooth: false})
+updateMessageLists({ smooth: false })
 
 const submit = async () => {
   if (input.value.trim() === '') return;
@@ -51,7 +56,8 @@ const submit = async () => {
     _id: 'temp',
     content: input.value,
     createdAt: new Date(),
-    createdById: user.value?._id as string,
+    createdById: user.value!._id,
+    createdBy: user.value!.displayName,
     conversationId: route.params.id as string,
     formatedCreatedAt: useTimeAgo(new Date()).value
   })
@@ -83,11 +89,67 @@ watch(() => addedResult.value, async (value) => {
   }
 })
 
+const conversation = computed(() => conversationResult.value?.conversation)
+const interactUser = computed(() => {
+  const interactUsers = conversation.value?.users.filter(id => id._id !== user.value?._id)
+  return interactUsers?.length ? interactUsers[0] : null
+})
+
 </script>
 
 <template>
   <NuxtLayout>
     <div class="flex flex-col flex-grow w-full h-96 overflow-hidden">
+      <div
+        v-if="conversation"
+        class="border-b border-gray-200"
+      >
+        <div class="flex items-center justify-between gap-4 p-4  max-w-5xl mx-auto w-full">
+          <div class="flex gap-4 items-center">
+            <div class="w-12">
+              <NlAvatar
+                v-if="conversation.type === ConversationType.Private"
+                class="flex-none"
+              />
+              <Icon
+                v-else
+                name="ri:group-2-fill"
+                class="w-12 h-12 text-gray-600"
+              />
+            </div>
+            <div v-if="conversation.type === ConversationType.Private">
+              <div class="text-sm">
+                {{ interactUser!.displayName }}
+              </div>
+              <div class="text-sm text-gray-500">
+                {{ interactUser!.email }}
+              </div>
+            </div>
+            <div v-if="conversation.type === ConversationType.Group">
+              <div class="text-sm">
+                {{ conversation.name }}
+              </div>
+              <div class="text-sm text-gray-500">
+                Lecturer Name: {{ conversation.semesterClass?.lecturer.displayName }}
+              </div>
+              <div class="text-sm text-gray-500">
+                Subject Name: {{ conversation.semesterClass?.subject.name }}
+              </div>
+            </div>
+          </div>
+          <div class=" justify-self-end">
+            <NlButton
+              size="xs"
+              @click="viewDocumentModalState = true"
+            >
+              <Icon
+                name="solar:document-bold-duotone"
+                class="text-slate-100 w-5 h-5"
+              />
+            </NlButton>
+          </div>
+        </div>
+      </div>
       <div
         ref="$chatbox"
         class="overflow-auto flex flex-grow"
@@ -104,8 +166,13 @@ watch(() => addedResult.value, async (value) => {
               v-if="user._id !== message.createdById"
               class="flex w-full mt-2 space-x-3 max-w-xl"
             >
-              <NlAvatar class="flex-shrink-0" />
               <div>
+                <NlAvatar class="flex-shrink-0" />
+              </div>
+              <div>
+                <div class="text-xs text-slate-500 mb-1">
+                  {{ message.createdBy }}
+                </div>
                 <div class="bg-gray-300 p-3 rounded-r-lg rounded-bl-lg">
                   <p class="text-sm">
                     {{ message.content }}
@@ -144,6 +211,7 @@ watch(() => addedResult.value, async (value) => {
           </form>
         </div>
       </div>
+      <ViewDocumentsModal v-model="viewDocumentModalState" />
     </div>
     <template #sidebar>
       <CommonSidebar />

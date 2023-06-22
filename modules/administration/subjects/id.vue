@@ -12,7 +12,7 @@ const { addAttachmentState, subjectsRefetch, } = useSharedVariable()
 const { mutate: updateSubject } = useUpdateSubjectMutation({ update: () => subjectRefetch() && subjectsRefetch() })
 const { result: facultiesResult } = useFacultiesQuery({ query: {} });
 const { result: subjectResult, refetch: subjectRefetch, variables: subjectVariables } = useSubjectQuery({ query: { _id: route.params.id } }, { fetchPolicy: 'network-only' })
-const {mutate: downloadUrl} = useDownloadSignedAttachmentUrlMutation()
+const { mutate: downloadUrl } = useDownloadSignedAttachmentUrlMutation()
 
 const { transform } = useObjectTransform()
 const loading = useComponentQueryLoading()
@@ -78,10 +78,10 @@ const currentSubject = computed(() => subjectResult.value?.subject)
 const weekAttachments = computed(() => currentSubject.value?.weekAttachments ?? [])
 
 const downloadDocument = async (id: string) => {
- const data = await downloadUrl({id})
- if (!data?.data?.downloadSignedAttachmentUrl) return;
+  const data = await downloadUrl({ id })
+  if (!data?.data?.downloadSignedAttachmentUrl) return;
 
- window.open(data.data.downloadSignedAttachmentUrl, '_blank')
+  window.open(data.data.downloadSignedAttachmentUrl, '_blank')
 }
 </script>
 

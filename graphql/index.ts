@@ -46,7 +46,9 @@ export type Conversation = {
   isActive: Scalars['Boolean'];
   isDeleted: Scalars['Boolean'];
   lastMessageAt?: Maybe<Scalars['DateTime']>;
+  name?: Maybe<Scalars['String']>;
   numberOfUnread: Scalars['Int'];
+  semesterClass?: Maybe<SemesterClass>;
   type: ConversationType;
   updatedAt: Scalars['DateTime'];
   updatedBy: User;
@@ -70,6 +72,7 @@ export type ConversationsSortArgs = {
 
 export type CreateConversationInput = {
   lastMessageAt?: InputMaybe<Scalars['DateTime']>;
+  name?: InputMaybe<Scalars['String']>;
   type?: ConversationType;
   userIds: Array<Scalars['ObjectId']>;
 };
@@ -83,6 +86,14 @@ export type CreateFacultyInput = {
 export type CreateMessageInput = {
   conversationId: Scalars['ObjectId'];
   text: Scalars['String'];
+};
+
+export type CreateSemesterClassInput = {
+  isActive: Scalars['Boolean'];
+  lecturerId: Scalars['ObjectId'];
+  semesterId: Scalars['ObjectId'];
+  studentsId: Array<Scalars['ObjectId']>;
+  subjectId: Scalars['ObjectId'];
 };
 
 export type CreateSemesterInput = {
@@ -151,6 +162,13 @@ export type FindAllMessagesInput = {
   userIds?: InputMaybe<Scalars['ObjectId']>;
 };
 
+export type FindAllSemesterClassesInput = {
+  isActive?: InputMaybe<Scalars['Boolean']>;
+  limit?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+};
+
 export type FindAllSemestersInput = {
   isActive?: InputMaybe<Scalars['Boolean']>;
   limit?: InputMaybe<Scalars['Int']>;
@@ -180,6 +198,11 @@ export type FindOneConversationInput = {
 export type FindOneFacultyInput = {
   _id?: InputMaybe<Scalars['ObjectId']>;
   slug?: InputMaybe<Scalars['String']>;
+};
+
+export type FindOneSemesterClassInput = {
+  _id?: InputMaybe<Scalars['ObjectId']>;
+  conversationId?: InputMaybe<Scalars['ObjectId']>;
 };
 
 export type FindOneSemesterInput = {
@@ -238,12 +261,14 @@ export type Mutation = {
   createFaculty: Faculty;
   createMessage: Message;
   createSemester: Semester;
+  createSemesterClass: SemesterClass;
   createSubject: Subject;
   createUser: User;
   downloadSignedAttachmentUrl?: Maybe<Scalars['String']>;
   loginWithPassword: LoginResult;
   updateFaculty: Faculty;
   updateSemester: Semester;
+  updateSemesterClass: SemesterClass;
   updateSubject: Subject;
   updateSubjectAddDocument: Subject;
   uploadAttachment: Attachment;
@@ -267,6 +292,11 @@ export type MutationCreateMessageArgs = {
 
 export type MutationCreateSemesterArgs = {
   input: CreateSemesterInput;
+};
+
+
+export type MutationCreateSemesterClassArgs = {
+  input: CreateSemesterClassInput;
 };
 
 
@@ -297,6 +327,11 @@ export type MutationUpdateFacultyArgs = {
 
 export type MutationUpdateSemesterArgs = {
   input: UpdateSemesterInput;
+};
+
+
+export type MutationUpdateSemesterClassArgs = {
+  input: UpdateSemesterClassInput;
 };
 
 
@@ -341,6 +376,15 @@ export type PaginatedMessage = {
   page: Scalars['Int'];
 };
 
+export type PaginatedSemesterClasses = {
+  __typename?: 'PaginatedSemesterClasses';
+  count: Scalars['Int'];
+  hasNextPage: Scalars['Boolean'];
+  hasPreviousPage: Scalars['Boolean'];
+  items: Array<SemesterClass>;
+  page: Scalars['Int'];
+};
+
 export type PaginatedSemesters = {
   __typename?: 'PaginatedSemesters';
   count: Scalars['Int'];
@@ -378,6 +422,8 @@ export type Query = {
   getSignedAttachmentUrl?: Maybe<Scalars['String']>;
   messages?: Maybe<PaginatedMessage>;
   semester: Semester;
+  semesterClass: SemesterClass;
+  semesterClasses: PaginatedSemesterClasses;
   semesters: PaginatedSemesters;
   subject?: Maybe<Subject>;
   subjects: PaginatedSubjects;
@@ -424,6 +470,17 @@ export type QuerySemesterArgs = {
 };
 
 
+export type QuerySemesterClassArgs = {
+  query: FindOneSemesterClassInput;
+};
+
+
+export type QuerySemesterClassesArgs = {
+  query: FindAllSemesterClassesInput;
+  sort?: InputMaybe<SemesterClassesSortArgs>;
+};
+
+
 export type QuerySemestersArgs = {
   query: FindAllSemestersInput;
   sort?: InputMaybe<SemestersSortArgs>;
@@ -465,6 +522,32 @@ export type Semester = {
   updatedAt: Scalars['DateTime'];
   updatedBy: User;
   updatedById: Scalars['ObjectId'];
+};
+
+export type SemesterClass = {
+  __typename?: 'SemesterClass';
+  _id: Scalars['ObjectId'];
+  conversationId?: Maybe<Scalars['ObjectId']>;
+  createdAt: Scalars['DateTime'];
+  createdBy: User;
+  createdById: Scalars['ObjectId'];
+  isActive: Scalars['Boolean'];
+  isDeleted: Scalars['Boolean'];
+  lecturer: User;
+  lecturerId: Scalars['ObjectId'];
+  name: Scalars['String'];
+  semester: Semester;
+  semesterId: Scalars['ObjectId'];
+  studentsId: Array<Scalars['ObjectId']>;
+  subject: Subject;
+  subjectId: Scalars['ObjectId'];
+  updatedAt: Scalars['DateTime'];
+  updatedBy: User;
+  updatedById: Scalars['ObjectId'];
+};
+
+export type SemesterClassesSortArgs = {
+  updatedAt?: InputMaybe<SortEnum>;
 };
 
 export type SemestersSortArgs = {
@@ -523,6 +606,15 @@ export type UpdateFacultyInput = {
   isActive?: InputMaybe<Scalars['Boolean']>;
   name?: InputMaybe<Scalars['String']>;
   slug?: InputMaybe<Scalars['String']>;
+};
+
+export type UpdateSemesterClassInput = {
+  _id: Scalars['ObjectId'];
+  isActive?: InputMaybe<Scalars['Boolean']>;
+  lecturerId?: InputMaybe<Scalars['ObjectId']>;
+  semesterId?: InputMaybe<Scalars['ObjectId']>;
+  studentsId?: InputMaybe<Array<Scalars['ObjectId']>>;
+  subjectId?: InputMaybe<Scalars['ObjectId']>;
 };
 
 export type UpdateSemesterInput = {
@@ -725,7 +817,14 @@ export type ConversationsQueryVariables = Exact<{
 }>;
 
 
-export type ConversationsQuery = { __typename?: 'Query', conversations: { __typename?: 'PaginatedConversation', items: Array<{ __typename?: 'Conversation', _id: any, type: ConversationType, numberOfUnread: number, users: Array<{ __typename?: 'User', _id: any, displayName: string, email: string }> }> } };
+export type ConversationsQuery = { __typename?: 'Query', conversations: { __typename?: 'PaginatedConversation', items: Array<{ __typename?: 'Conversation', _id: any, type: ConversationType, name?: string | null, numberOfUnread: number, users: Array<{ __typename?: 'User', _id: any, displayName: string, email: string }> }> } };
+
+export type ConversationQueryVariables = Exact<{
+  input: FindOneConversationInput;
+}>;
+
+
+export type ConversationQuery = { __typename?: 'Query', conversation: { __typename?: 'Conversation', name?: string | null, type: ConversationType, users: Array<{ __typename?: 'User', _id: any, email: string, displayName: string }>, semesterClass?: { __typename?: 'SemesterClass', lecturer: { __typename?: 'User', displayName: string, email: string }, subject: { __typename?: 'Subject', name: string, weekAttachments?: Array<{ __typename?: 'WeekDocument', attachmentId: any, week: number, name: string, attachmentInfo: { __typename?: 'Attachment', filename: string, size: number } }> | null } } | null } };
 
 export type CreateConversationMutationVariables = Exact<{
   input: CreateConversationInput;
@@ -1367,6 +1466,7 @@ export const ConversationsDocument = gql`
       }
       _id
       type
+      name
       numberOfUnread
     }
   }
@@ -1396,6 +1496,60 @@ export function useConversationsLazyQuery(variables: ConversationsQueryVariables
   return VueApolloComposable.useLazyQuery<ConversationsQuery, ConversationsQueryVariables>(ConversationsDocument, variables, options);
 }
 export type ConversationsQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<ConversationsQuery, ConversationsQueryVariables>;
+export const ConversationDocument = gql`
+    query Conversation($input: FindOneConversationInput!) {
+  conversation(input: $input) {
+    name
+    users {
+      _id
+      email
+      displayName
+    }
+    semesterClass {
+      lecturer {
+        displayName
+        email
+      }
+      subject {
+        name
+        weekAttachments {
+          attachmentId
+          week
+          name
+          attachmentInfo {
+            filename
+            size
+          }
+        }
+      }
+    }
+    type
+  }
+}
+    `;
+
+/**
+ * __useConversationQuery__
+ *
+ * To run a query within a Vue component, call `useConversationQuery` and pass it any options that fit your needs.
+ * When your component renders, `useConversationQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * you can use to render your UI.
+ *
+ * @param variables that will be passed into the query
+ * @param options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
+ *
+ * @example
+ * const { result, loading, error } = useConversationQuery({
+ *   input: // value for 'input'
+ * });
+ */
+export function useConversationQuery(variables: ConversationQueryVariables | VueCompositionApi.Ref<ConversationQueryVariables> | ReactiveFunction<ConversationQueryVariables>, options: VueApolloComposable.UseQueryOptions<ConversationQuery, ConversationQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<ConversationQuery, ConversationQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<ConversationQuery, ConversationQueryVariables>> = {}) {
+  return VueApolloComposable.useQuery<ConversationQuery, ConversationQueryVariables>(ConversationDocument, variables, options);
+}
+export function useConversationLazyQuery(variables: ConversationQueryVariables | VueCompositionApi.Ref<ConversationQueryVariables> | ReactiveFunction<ConversationQueryVariables>, options: VueApolloComposable.UseQueryOptions<ConversationQuery, ConversationQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<ConversationQuery, ConversationQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<ConversationQuery, ConversationQueryVariables>> = {}) {
+  return VueApolloComposable.useLazyQuery<ConversationQuery, ConversationQueryVariables>(ConversationDocument, variables, options);
+}
+export type ConversationQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<ConversationQuery, ConversationQueryVariables>;
 export const CreateConversationDocument = gql`
     mutation CreateConversation($input: CreateConversationInput!) {
   createConversation(input: $input) {
